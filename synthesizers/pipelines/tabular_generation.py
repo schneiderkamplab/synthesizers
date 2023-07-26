@@ -13,4 +13,3 @@ class TabularGenerationPipeline(Pipeline):
         dd = DatasetDict()
         dd['generated'] = ds
         return dd
-    pass

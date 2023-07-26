@@ -6,17 +6,25 @@ from ..adapters import (
 from .base import (
     PipelineRegistry,
 )
+from .tabular_evaluation import TabularEvaluationPipeline
 from .tabular_generation import TabularGenerationPipeline
 from .tabular_synthesis import TabularSynthesisPipeline, TabularSynthesisDPPipeline
 from .tabular_training import TabularTrainingPipeline
 
 # Register all the supported tasks here
 TASK_ALIASES = {
+    "evaluate": "tabular-evaluation",
     "generate": "tabular-generation",
     "synthesize": "tabular-synthesis",
     "train": "tabular-training",
 }
 SUPPORTED_TASKS = {
+    "tabular-evaluation": {
+        "impl": TabularEvaluationPipeline,
+        "adapter": SynthCityAdapter(),
+        "default": None,
+        "type": "tabular",
+    },
     "tabular-generation": {
         "impl": TabularGenerationPipeline,
         "adapter": SynthCityAdapter(),
@@ -32,7 +40,7 @@ SUPPORTED_TASKS = {
     # This task is a special case as it's parametrized by EPSILON and DELTA.
     "tabular-synthesis-dp": {
         "impl": TabularSynthesisDPPipeline,
-        "adapter": SynthCityAdapter(),
+        "adapter": SynthCityAdapter(plugin="dpgan"),
         "default": None,
         "type": "tabular",
     },
