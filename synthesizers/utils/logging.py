@@ -6,6 +6,7 @@ import threading
 from typing import Optional
 
 _lock = threading.Lock()
+_default_handler: Optional[logging.Handler] = None
 
 log_levels = {
     "debug": logging.DEBUG,

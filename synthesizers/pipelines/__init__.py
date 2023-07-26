@@ -1,27 +1,44 @@
 from typing import Any, Dict, Optional, Tuple
 
+from ..adapters import (
+    SynthCityAdapter,
+)
 from .base import (
     PipelineRegistry,
 )
+from .tabular_generation import TabularGenerationPipeline
 from .tabular_synthesis import TabularSynthesisPipeline, TabularSynthesisDPPipeline
+from .tabular_training import TabularTrainingPipeline
 
 # Register all the supported tasks here
 TASK_ALIASES = {
-    "sentiment-analysis": "text-classification",
-    "ner": "token-classification",
-    "vqa": "visual-question-answering",
+    "generate": "tabular-generation",
+    "synthesize": "tabular-synthesis",
+    "train": "tabular-training",
 }
 SUPPORTED_TASKS = {
+    "tabular-generation": {
+        "impl": TabularGenerationPipeline,
+        "adapter": SynthCityAdapter(),
+        "default": None,
+        "type": "tabular",
+    },
     "tabular-synthesis": {
         "impl": TabularSynthesisPipeline,
-        "model": (),
+        "adapter": SynthCityAdapter(),
         "default": None,
         "type": "tabular",
     },
     # This task is a special case as it's parametrized by EPSILON and DELTA.
     "tabular-synthesis-dp": {
         "impl": TabularSynthesisDPPipeline,
-        "model": (),
+        "adapter": SynthCityAdapter(),
+        "default": None,
+        "type": "tabular",
+    },
+    "tabular-training": {
+        "impl": TabularTrainingPipeline,
+        "adapter": SynthCityAdapter(),
         "default": None,
         "type": "tabular",
     },
@@ -52,9 +69,15 @@ def check_task(task: str) -> Tuple[str, Dict, Any]:
 
 def pipeline(
     task: str = None,
-    model: Optional[Any] = None,
+    adapter: Optional[Any] = None,
     pipeline_class: Optional[Any] = None,
+    **kwargs,
 ):
     normalized_task, targeted_task, task_options = check_task(task)
     if pipeline_class is None:
         pipeline_class = targeted_task["impl"]
+    if adapter is None:
+        adapter = targeted_task["adapter"]
+
+    return pipeline_class(task=task, adapter=adapter, **kwargs)
+

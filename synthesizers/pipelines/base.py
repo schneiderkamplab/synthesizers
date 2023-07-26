@@ -72,4 +72,6 @@ class PipelineRegistry:
         return self.supported_tasks
 
 class Pipeline():
-    pass
+    def __init__(self, task, adapter):
+        self.task = task
+        self.adapter = adapter
