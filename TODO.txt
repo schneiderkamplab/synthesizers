@@ -1,5 +1,9 @@
-* save function (via ensure_format and datasetdict.save_...
-* evaluation metrics for synthcity
+* input_formats for each adapter with ensure format (map format to classes and any(..) them)
+* output_format for each pipeline (include "auto" which keeps or uses closest)
+* parameter for only ouput or full dict
+* save function (via ensure_format and datasetdict.save_...)
+* further evaluation metrics for synthcity
+* wrapper class for models that makes them saveable to disk/hf hub
 * synthpop
 * syntheval
 * other backends?
