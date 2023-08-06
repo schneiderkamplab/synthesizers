@@ -1,8 +1,6 @@
 print("IMPORTING LIBRARIES")
-from datasets import load_dataset, Dataset
-from numpy import ndarray
-from pandas import DataFrame
-from synthcity.plugins.core.dataloader import GenericDataLoader
+from datasets import load_dataset
+import synthcity.metrics.eval_statistical
 from synthesizers import pipeline
 from synthesizers.utils.formats import ensure_format, SUPPORTED_FORMATS
 
@@ -44,6 +42,16 @@ out_data = p(in_data)
 lim_print(out_data)
 
 print("TESTING EVALUATION")
+print("default", end=": ")
 p = pipeline("evaluate")
 result = p(in_data, out_data)
 lim_print(result)
+for value in synthcity.metrics.eval_statistical.__dict__.values():
+    try:
+        if value.type() == "stats":
+            p = pipeline("evaluate", evaluator_class=value)
+            result = p(in_data, out_data)
+            print(value.name(), end=": ")
+            lim_print(result)
+    except:
+        pass

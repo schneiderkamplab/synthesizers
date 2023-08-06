@@ -35,9 +35,10 @@ class PipelineRegistry:
         )
 
 class Pipeline():
-    def __init__(self, task, adapter, output_format=None):
+    def __init__(self, task, adapter, output_format=None, **kwargs):
         self.task = task
         self.adapter = adapter
         self.output_format = output_format
+        self.kwargs = kwargs
     def ensure_output_format(self, data, output_format=None, **kwargs):
         return ensure_format(data, (self.output_format if output_format is None else output_format,), **kwargs)

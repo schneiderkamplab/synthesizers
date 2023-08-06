@@ -1,4 +1,3 @@
-* make evaluator_class a parameter of pipeline via kwargs
 * output format for evaluation pipeline
 * output format for training pipeline (via wrapper classes for models)
 * parameter for only ouput or full dict
