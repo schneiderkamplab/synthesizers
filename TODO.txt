@@ -1,8 +1,9 @@
+* push_to_hub method on models a la https://huggingface.co/docs/datasets/main/en/package_reference/main_classes#datasets.DatasetDict.push_to_hub
 * output format for evaluation pipeline
-* output format for training pipeline (via wrapper classes for models)
-* parameter for only ouput or full dict
-* save function (via ensure_format and datasetdict.save_...)
-* further evaluation metrics for synthcity
+* parameter for only ouput or full dict incl. mode, original data etc.
+* save function (via ensure_format and datasetdict.save_to_disk...)
 * synthpop
 * syntheval
 * other backends?
+* how to handle datasetdicts?
+* should dataset be the default?
