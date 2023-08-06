@@ -3,6 +3,7 @@ from synthcity.plugins.core.dataloader import GenericDataLoader
 from synthcity.plugins import Plugins
 
 from .base import Adapter
+from ..models.synthcity import SynthCityModel
 
 class SynthCityAdapter(Adapter):
     def __init__(self, plugin = 'adsgan', evaluator_class = AlphaPrecision, input_formats=(GenericDataLoader,)):
@@ -13,9 +14,9 @@ class SynthCityAdapter(Adapter):
         data = self.ensure_input_format(data)
         model = Plugins().get(self.plugin if plugin is None else plugin)
         model.fit(data)
-        return model
+        return SynthCityModel(model)
     def generate_data(self, model, count):
-        result = model.generate(count=count)
+        result = model.model.generate(count=count)
         return result
     def evaluate_generated(self, orig_data, data, evaluator_class=None):
         orig_data = self.ensure_input_format(orig_data)

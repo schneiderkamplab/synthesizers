@@ -3,7 +3,6 @@
 * parameter for only ouput or full dict
 * save function (via ensure_format and datasetdict.save_...)
 * further evaluation metrics for synthcity
-* wrapper class for models that makes them saveable to disk/hf hub
 * synthpop
 * syntheval
 * other backends?

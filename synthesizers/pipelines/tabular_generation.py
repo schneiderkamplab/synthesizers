@@ -1,9 +1,10 @@
 from .base import Pipeline
+from ..models.base import Model
 
 class TabularGenerationPipeline(Pipeline):
     def __call__(
         self,
-        model: object,
+        model: Model,
         count: int = 1,
     ):
         output = self.adapter.generate_data(model, count, **self.kwargs)
