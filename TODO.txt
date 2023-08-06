@@ -1,5 +1,6 @@
-* input_formats for each adapter with ensure format (map format to classes and any(..) them)
-* output_format for each pipeline (include "auto" which keeps or uses closest)
+* make evaluator_class a parameter of pipeline via kwargs
+* output format for evaluation pipeline
+* output format for training pipeline (via wrapper classes for models)
 * parameter for only ouput or full dict
 * save function (via ensure_format and datasetdict.save_...)
 * further evaluation metrics for synthcity

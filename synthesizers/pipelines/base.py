@@ -1,5 +1,6 @@
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Tuple
 
+from ..utils.formats import ensure_format
 from ..utils import logging
 
 logger = logging.get_logger(__name__)
@@ -33,45 +34,10 @@ class PipelineRegistry:
             f"Unknown task {task}, available tasks are {self.get_supported_tasks() + ['tabular-synthesis-dp_EPSILON_DELTA']}"
         )
 
-    def register_pipeline(
-        self,
-        task: str,
-        pipeline_class: type,
-        pt_model: Optional[Union[type, Tuple[type]]] = None,
-        tf_model: Optional[Union[type, Tuple[type]]] = None,
-        default: Optional[Dict] = None,
-        type: Optional[str] = None,
-    ) -> None:
-        if task in self.supported_tasks:
-            logger.warning(f"{task} is already registered. Overwriting pipeline for task {task}...")
-
-        if pt_model is None:
-            pt_model = ()
-        elif not isinstance(pt_model, tuple):
-            pt_model = (pt_model,)
-
-        if tf_model is None:
-            tf_model = ()
-        elif not isinstance(tf_model, tuple):
-            tf_model = (tf_model,)
-
-        task_impl = {"impl": pipeline_class, "pt": pt_model, "tf": tf_model}
-
-        if default is not None:
-            if "model" not in default and ("pt" in default or "tf" in default):
-                default = {"model": default}
-            task_impl["default"] = default
-
-        if type is not None:
-            task_impl["type"] = type
-
-        self.supported_tasks[task] = task_impl
-        pipeline_class._registered_impl = {task: task_impl}
-
-    def to_dict(self):
-        return self.supported_tasks
-
 class Pipeline():
-    def __init__(self, task, adapter):
+    def __init__(self, task, adapter, output_format=None):
         self.task = task
         self.adapter = adapter
+        self.output_format = output_format
+    def ensure_output_format(self, data, output_format=None, **kwargs):
+        return ensure_format(data, (self.output_format if output_format is None else output_format,), **kwargs)

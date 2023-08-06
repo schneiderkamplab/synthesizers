@@ -1,18 +1,49 @@
-from datasets import load_dataset, DatasetDict
-in_data_train = load_dataset("mstz/breast", split='train[:100]')
-in_data = DatasetDict()
-in_data['train'] = in_data_train
-print(in_data)
+print("IMPORTING LIBRARIES")
+from datasets import load_dataset, Dataset
+from numpy import ndarray
+from pandas import DataFrame
+from synthcity.plugins.core.dataloader import GenericDataLoader
 from synthesizers import pipeline
+from synthesizers.utils.formats import ensure_format, SUPPORTED_FORMATS
+
+def lim_print(data, limit=800):
+    res = repr(data).replace("\n","")
+    res = res if len(res) <= limit else res[:limit-3]+"..."
+    print(type(data), res)
+
+print("LOADING TEST DATASET")
+in_data = load_dataset("mstz/breast", split='train[:100]')
+
+print("TESTING FORMAT CONVERSIONS")
+data = {}
+for format in SUPPORTED_FORMATS:
+    tmp_data = ensure_format(in_data, target_formats=(format,))
+    assert type(tmp_data) == format
+    lim_print(tmp_data)
+    data[format] = tmp_data
+for source_format in SUPPORTED_FORMATS:
+    for target_format in SUPPORTED_FORMATS:
+        tmp_data = ensure_format(data[source_format], target_formats=(target_format,))
+        assert type(tmp_data) == target_format
+        lim_print(tmp_data)
+        assert ensure_format(tmp_data, target_formats=(list,)) == data[list]
+
+print("TESTING TRAINING")
 p = pipeline("train")
 model = p(in_data)
-print(model)
+lim_print(model)
+
+print("TESTING GENERATION")
 p = pipeline("generate")
 out_data = p(model, count=100)
-print(out_data)
+lim_print(out_data)
+
+print("TESTING SYNTHESIS")
 p = pipeline("synthesize")
 out_data = p(in_data)
-print(out_data)
+lim_print(out_data)
+
+print("TESTING EVALUATION")
 p = pipeline("evaluate")
-result = p(out_data['train'], out_data['generated'])
-print(result)
+result = p(in_data, out_data)
+lim_print(result)

@@ -5,9 +5,8 @@ from .base import Pipeline
 class TabularTrainingPipeline(Pipeline):
     def __call__(
         self,
-        data: Dataset,
+        data: object,
     ):
-        input = self.adapter.convert_input(data['train'])
-        model = self.adapter.train_model(input)
+        model = self.adapter.train_model(data)
         return model
 

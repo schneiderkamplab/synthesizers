@@ -1,5 +1,3 @@
-from datasets import DatasetDict
-
 from .base import Pipeline
 
 class TabularGenerationPipeline(Pipeline):
@@ -9,7 +7,6 @@ class TabularGenerationPipeline(Pipeline):
         count: int = 1,
     ):
         output = self.adapter.generate_data(model, count)
-        ds = self.adapter.convert_output(output)
-        dd = DatasetDict()
-        dd['generated'] = ds
-        return dd
+        if self.output_format is not None:
+            output = self.ensure_output_format(output)
+        return output

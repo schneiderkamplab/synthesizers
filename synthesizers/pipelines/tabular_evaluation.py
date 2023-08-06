@@ -1,5 +1,3 @@
-from datasets import DatasetDict
-
 from .base import Pipeline
 
 class TabularEvaluationPipeline(Pipeline):
