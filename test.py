@@ -1,6 +1,7 @@
 print("IMPORTING LIBRARIES")
 from datasets import load_dataset
 import synthcity.metrics.eval_statistical
+import synthcity.plugins
 from synthesizers import pipeline
 from synthesizers.utils.formats import ensure_format, SUPPORTED_FORMATS
 
@@ -53,5 +54,14 @@ for value in synthcity.metrics.eval_statistical.__dict__.values():
             result = p(in_data, out_data)
             print(value.name(), end=": ")
             lim_print(result)
+    except:
+        pass
+
+print("TESTING SYNTHCITY PLUGINS")
+for plugin in synthcity.plugins.Plugins().list():
+    try:
+        p = pipeline("train", plugin=plugin)
+        model = p(in_data)
+        lim_print(model)
     except:
         pass
