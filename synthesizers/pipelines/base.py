@@ -1,5 +1,7 @@
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Type, Union
 
+from ..adapters import NAME_TO_ADAPTER
+from ..adapters.base import Adapter
 from ..utils.formats import ensure_format
 from ..utils import logging
 
@@ -35,8 +37,15 @@ class PipelineRegistry:
         )
 
 class Pipeline():
-    def __init__(self, task, adapter, output_format=None, **kwargs):
+    def __init__(self,
+            task: str,
+            adapter: Optional[Union[Adapter, str]] = None,
+            output_format: Optional[Type] = None,
+            **kwargs,
+        ):
         self.task = task
+        if isinstance(adapter, str):
+            adapter = NAME_TO_ADAPTER[adapter]()
         self.adapter = adapter
         self.output_format = output_format
         self.kwargs = kwargs

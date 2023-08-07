@@ -8,7 +8,7 @@ MODEL_FILE = "synthpop.pickle"
 
 class SynthPopModel(Model):
     def __init__(self, model):
-        super(SynthPopModel, self).__init__(saveable=False)
+        super(SynthPopModel, self).__init__(saveable=True)
         self.model = model
     def save_pretrained(self, name):
         path = Path(name)

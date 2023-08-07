@@ -3,7 +3,7 @@ from datasets import load_dataset
 import synthcity.metrics.eval_statistical
 import synthcity.plugins
 from synthesizers import pipeline
-from synthesizers.models import SynthCityModel, SynthPopModel
+from synthesizers.models import AutoModel
 from synthesizers.adapters import SynthPopAdapter
 from synthesizers.utils.formats import ensure_format, SUPPORTED_FORMATS
 
@@ -34,18 +34,18 @@ p = pipeline("train")
 model = p(in_data)
 lim_print(model)
 model.save_pretrained("synthcity/model")
-p = pipeline("train", adapter=SynthPopAdapter())
+p = pipeline("train", adapter="synthpop")
 model = p(in_data)
 lim_print(model)
 model.save_pretrained("synthpop/model")
 
 print("TESTING GENERATION")
-model = SynthCityModel.from_pretrained("synthcity/model")
+model = AutoModel.from_pretrained("synthcity/model")
 p = pipeline("generate", model=model)
 out_data = p(count=100)
 lim_print(out_data)
-model = SynthPopModel.from_pretrained("synthpop/model")
-p = pipeline("generate", model=model, adapter=SynthPopAdapter())
+model = AutoModel.from_pretrained("synthpop/model")
+p = pipeline("generate", model=model)
 out_data = p(count=100)
 lim_print(out_data)
 

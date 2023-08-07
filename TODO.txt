@@ -1,5 +1,4 @@
-* push_to_hub method on models a la https://huggingface.co/docs/datasets/main/en/package_reference/main_classes#datasets.DatasetDict.push_to_hub
-* AutoModel to determine the model and adapter class
+* push_to_hub method on models a la https://github.com/huggingface/datasets/blob/main/src/datasets/arrow_dataset.py
 * output format for evaluation pipeline
 * parameter for only ouput or full dict incl. mode, original data etc.
 * save function (via ensure_format and datasetdict.save_to_disk...)

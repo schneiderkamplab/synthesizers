@@ -1,7 +1,10 @@
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple, Type, Union
 
 from ..adapters import (
     SynthCityAdapter,
+)
+from ..adapters.base import (
+    Adapter,
 )
 from .base import (
     PipelineRegistry,
@@ -22,32 +25,27 @@ SUPPORTED_TASKS = {
     "tabular-evaluation": {
         "impl": TabularEvaluationPipeline,
         "adapter": SynthCityAdapter(),
-        "default": None,
         "type": "tabular",
     },
     "tabular-generation": {
         "impl": TabularGenerationPipeline,
-        "adapter": SynthCityAdapter(),
-        "default": None,
+        "adapter": None,
         "type": "tabular",
     },
     "tabular-synthesis": {
         "impl": TabularSynthesisPipeline,
         "adapter": SynthCityAdapter(),
-        "default": None,
         "type": "tabular",
     },
     # This task is a special case as it's parametrized by EPSILON and DELTA.
     "tabular-synthesis-dp": {
         "impl": TabularSynthesisDPPipeline,
         "adapter": SynthCityAdapter(plugin="dpgan"),
-        "default": None,
         "type": "tabular",
     },
     "tabular-training": {
         "impl": TabularTrainingPipeline,
         "adapter": SynthCityAdapter(),
-        "default": None,
         "type": "tabular",
     },
 }
@@ -77,8 +75,8 @@ def check_task(task: str) -> Tuple[str, Dict, Any]:
 
 def pipeline(
     task: str = None,
-    adapter: Optional[Any] = None,
-    pipeline_class: Optional[Any] = None,
+    adapter: Optional[Union[Adapter, str]] = None,
+    pipeline_class: Optional[Type] = None,
     **kwargs,
 ):
     normalized_task, targeted_task, task_options = check_task(task)
