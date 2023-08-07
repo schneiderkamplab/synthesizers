@@ -2,7 +2,7 @@
 * output format for evaluation pipeline
 * parameter for only ouput or full dict incl. mode, original data etc.
 * save function (via ensure_format and datasetdict.save_to_disk...)
-* syntheval
+* syntheval backend for evaluation
 * other backends?
 * how to handle datasetdicts?
 * should dataset be the default output?
