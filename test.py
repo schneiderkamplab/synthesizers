@@ -3,6 +3,8 @@ from datasets import load_dataset
 import synthcity.metrics.eval_statistical
 import synthcity.plugins
 from synthesizers import pipeline
+from synthesizers.models import SynthCityModel, SynthPopModel
+from synthesizers.adapters import SynthPopAdapter
 from synthesizers.utils.formats import ensure_format, SUPPORTED_FORMATS
 
 def lim_print(data, limit=800):
@@ -31,14 +33,27 @@ print("TESTING TRAINING")
 p = pipeline("train")
 model = p(in_data)
 lim_print(model)
+model.save_pretrained("synthcity/model")
+p = pipeline("train", adapter=SynthPopAdapter())
+model = p(in_data)
+lim_print(model)
+model.save_pretrained("synthpop/model")
 
 print("TESTING GENERATION")
+model = SynthCityModel.from_pretrained("synthcity/model")
 p = pipeline("generate")
+out_data = p(model, count=100)
+lim_print(out_data)
+model = SynthPopModel.from_pretrained("synthpop/model")
+p = pipeline("generate", adapter=SynthPopAdapter())
 out_data = p(model, count=100)
 lim_print(out_data)
 
 print("TESTING SYNTHESIS")
 p = pipeline("synthesize")
+out_data = p(in_data)
+lim_print(out_data)
+p = pipeline("synthesize", adapter=SynthPopAdapter())
 out_data = p(in_data)
 lim_print(out_data)
 
