@@ -19,8 +19,8 @@ class SynthPopAdapter(Adapter):
         model = Synthpop()
         model.fit(data, dtypes)
         return SynthPopModel(model)
-    def generate_data(self, model, count):
+    def generate_data(self, count, model):
         result = model.model.generate(k=count)
         return result
-    def evaluate_generated(self, orig_data, data, evaluator_class=None):
+    def evaluate_generated(self, original_data, generated_data):
         raise NotImplementedError("evaluation not implemented for SynthPop")

@@ -5,6 +5,9 @@ class TabularEvaluationPipeline(Pipeline):
         self,
         original_data: object,
         generated_data: object,
-        count: int = 1,
     ):
-        return self.adapter.evaluate_generated(original_data, generated_data, **self.kwargs)
+        return self.adapter.evaluate_generated(
+            original_data=original_data,
+            generated_data=generated_data,
+            **self.kwargs,
+        )

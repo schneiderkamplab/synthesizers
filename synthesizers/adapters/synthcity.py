@@ -15,12 +15,12 @@ class SynthCityAdapter(Adapter):
         model = Plugins().get(self.plugin if plugin is None else plugin)
         model.fit(data)
         return SynthCityModel(model)
-    def generate_data(self, model, count):
+    def generate_data(self, count, model):
         result = model.model.generate(count=count)
         return result
-    def evaluate_generated(self, orig_data, data, evaluator_class=None):
-        orig_data = self.ensure_input_format(orig_data)
-        data = self.ensure_input_format(data)
+    def evaluate_generated(self, original_data, generated_data, evaluator_class=None):
+        original_data = self.ensure_input_format(original_data)
+        generated_data = self.ensure_input_format(generated_data)
         evaluator_class = self.evaluator_class if evaluator_class is None else evaluator_class
         evaluator = evaluator_class()
-        return evaluator.evaluate(orig_data, data)
+        return evaluator.evaluate(original_data, generated_data)

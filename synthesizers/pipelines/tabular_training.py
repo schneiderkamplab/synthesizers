@@ -7,6 +7,9 @@ class TabularTrainingPipeline(Pipeline):
         self,
         data: object,
     ):
-        model = self.adapter.train_model(data, **self.kwargs)
+        model = self.adapter.train_model(
+            data=data,
+            **self.kwargs,
+        )
         return model
 
