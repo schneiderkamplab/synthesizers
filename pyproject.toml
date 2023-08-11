@@ -29,3 +29,11 @@ dependencies = [
 [project.urls]
 "Homepage" = "https://github.com/schneiderkamplab/synthesizers"
 "Bug Tracker" = "https://github.com/schneiderkamplab/synthesizers/issues"
+
+[tool.hatch.build]
+include = [
+    'synthesizers',
+    'LICENSE',
+    'README.md',
+]
+
