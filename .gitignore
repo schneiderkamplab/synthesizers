@@ -7,3 +7,4 @@ dist
 *.egg-info
 workspace
 test
+requirements.txt
