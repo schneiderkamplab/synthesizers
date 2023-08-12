@@ -1,8 +1,11 @@
-* push_to_hub method on models a la https://github.com/huggingface/datasets/blob/main/src/datasets/arrow_dataset.py
 * output format for evaluation pipeline
+* select evaluation automatically for given list of metrics?
+* why is num_cols not used in distance_to_closest_record? why does test.py fail for fast_eval?
+* make syntheval file output optional
+* syntheval plots etc as PIL images or something?
 * parameter for only ouput or full dict incl. mode, original data etc.
-* save function (via ensure_format and datasetdict.save_to_disk...)
-* syntheval
+* push_to_hub method on models a la https://github.com/huggingface/datasets/blob/main/src/datasets/arrow_dataset.py
 * other backends?
 * how to handle datasetdicts?
 * should dataset be the default output?
+* save function (via ensure_format and datasetdict.save_to_disk...)

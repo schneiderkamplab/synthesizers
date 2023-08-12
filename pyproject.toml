@@ -1,10 +1,39 @@
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
+name = "synthesizers"
+version = "0.1.1"
+authors = [
+  { name="Peter Schneider-Kamp"}
+]
+
+description = "A meta framework for synthetic data generation."
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
 dependencies = [
     'datasets',
     'pandas',
     'py-synthpop',
     'synthcity',
+    'syntheval',
 ]
+
+[project.urls]
+"Homepage" = "https://github.com/schneiderkamplab/synthesizers"
+"Bug Tracker" = "https://github.com/schneiderkamplab/synthesizers/issues"
+
+[tool.hatch.build]
+include = [
+    'synthesizers',
+    'LICENSE',
+    'README.md',
+]
+
