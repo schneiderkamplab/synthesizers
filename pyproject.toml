@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "synthesizers"
-version = "0.1.1"
+version = "0.1.2"
 authors = [
   { name="Peter Schneider-Kamp"}
 ]
@@ -22,6 +22,7 @@ dependencies = [
     'datasets',
     'pandas',
     'py-synthpop',
+    'pydantic<2',
     'synthcity',
     'syntheval',
 ]
