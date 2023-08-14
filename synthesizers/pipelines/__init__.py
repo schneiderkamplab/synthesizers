@@ -2,6 +2,7 @@ from typing import Any, Dict, Optional, Tuple, Type, Union
 
 from ..adapters import (
     SynthCityAdapter,
+    SynthEvalAdapter,
 )
 from ..adapters.base import (
     Adapter,
@@ -24,7 +25,7 @@ TASK_ALIASES = {
 SUPPORTED_TASKS = {
     "tabular-evaluation": {
         "impl": TabularEvaluationPipeline,
-        "adapter": SynthCityAdapter(),
+        "adapter": SynthEvalAdapter(),
         "type": "tabular",
     },
     "tabular-generation": {
