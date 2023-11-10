@@ -16,8 +16,8 @@ class TabularGenerationPipeline(Pipeline):
         kwargs.update(self.gen_args)
         if count is None:
             count = 1 if state.train is None else len(state.train)
-        if self.adapter is None:
-            self.adapter = eval(MODEL_TO_ADAPTER[state.model.__class__])()
+        if self.train_adapter is None:
+            self.train_adapter = eval(MODEL_TO_ADAPTER[state.model.__class__])()
         state.synth = self.train_adapter.generate_data(
             count=count,
             model=state.model,
