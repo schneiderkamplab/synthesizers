@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Optional, Tuple, Type, Union
 
 from ..adapters import NAME_TO_ADAPTER
 from ..adapters.base import Adapter
-from ..utils.formats import ensure_format
+from ..utils import ensure_format
 from ..utils import logging
 
 logger = logging.get_logger(__name__)

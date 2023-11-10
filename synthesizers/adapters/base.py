@@ -1,4 +1,4 @@
-from ..utils.formats import ensure_format
+from ..utils import ensure_format
 
 class Adapter:
     def __init__(self, input_formats):

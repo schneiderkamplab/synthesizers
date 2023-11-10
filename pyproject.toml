@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "synthesizers"
-version = "0.1.3"
+version = "0.1.4"
 authors = [
   { name="Peter Schneider-Kamp"}
 ]
@@ -20,6 +20,7 @@ classifiers = [
 
 dependencies = [
     'datasets',
+    'openpyxl',
     'pandas',
     'py-synthpop',
     'pydantic<2',

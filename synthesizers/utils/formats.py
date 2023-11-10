@@ -3,6 +3,8 @@ from numpy import ndarray, array
 from pandas import DataFrame
 from synthcity.plugins.core.dataloader import GenericDataLoader
 
+from .loading import loader
+
 SUPPORTED_FORMATS = [
     list,
     ndarray,
@@ -13,6 +15,9 @@ SUPPORTED_FORMATS = [
 
 def ensure_format(data, target_formats, **kwargs):
     source_format = type(data)
+    if source_format == str:
+        data = loader(data)
+        source_format = type(data)
     if source_format not in SUPPORTED_FORMATS:
         raise ValueError(f"unknown source format {source_format}")
     for target_format in target_formats:
