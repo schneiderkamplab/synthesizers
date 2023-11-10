@@ -7,9 +7,11 @@ class TabularTrainingPipeline(Pipeline):
         state: StateDict,
     ):
         state = StateDict.wrap(state)
+        kwargs = dict(self.kwargs)
+        kwargs.update(self.train_args)
         state.model = self.train_adapter.train_model(
             data=state.train,
-            **self.kwargs,
+            **kwargs,
         )
         return state
 

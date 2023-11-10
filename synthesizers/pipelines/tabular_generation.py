@@ -12,6 +12,8 @@ class TabularGenerationPipeline(Pipeline):
         count: Optional[int] = None,
     ):
         state = StateDict.wrap(state)
+        kwargs = dict(self.kwargs)
+        kwargs.update(self.gen_args)
         if count is None:
             count = 1 if state.train is None else len(state.train)
         if self.adapter is None:
@@ -19,7 +21,7 @@ class TabularGenerationPipeline(Pipeline):
         state.synth = self.train_adapter.generate_data(
             count=count,
             model=state.model,
-            **self.kwargs,
+            **kwargs,
         )
         if self.output_format is not None:
             state.synth = self.ensure_output_format(state.synth)

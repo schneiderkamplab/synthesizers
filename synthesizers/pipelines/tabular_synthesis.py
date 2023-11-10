@@ -16,19 +16,19 @@ class TabularSynthesisPipeline(Pipeline):
             count = len(state.train)
         state.model = self.train_adapter.train_model(
             data=state.train,
-            **self.kwargs,
+            **self.train_args,
         )
         state.synth = self.train_adapter.generate_data(
             count=count,
             model=state.model,
-            **self.kwargs,
+            **self.gen_args,
         )
-        if do_eval:
+        if do_eval or self.kwargs["do_eval"]:
             state.eval = self.eval_adapter.evaluate_generated(
                 original_data=state.train,
                 generated_data=state.synth,
                 hold_out=state.test,
-                **self.kwargs,
+                **self.eval_args,
             )
         output_format = type(state.train) if self.output_format is "auto" else self.output_format
         if output_format is not None:

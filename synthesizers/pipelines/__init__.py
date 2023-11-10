@@ -93,6 +93,17 @@ def pipeline(
         train_adapter = targeted_task["train_adapter"]
     if eval_adapter is None:
         eval_adapter = targeted_task["eval_adapter"]
-
-    return pipeline_class(task=task, train_adapter=train_adapter, eval_adapter=eval_adapter, **kwargs)
+    train_args = {k.split("train_")[1]: v for k, v in kwargs.items() if k.starts_with("train_")}
+    gen_args = {k.split("gen_")[1]: v for k, v in kwargs.items() if k.starts_with("gen_")}
+    eval_args = {k.split("eval_")[1]: v for k, v in kwargs.items() if k.starts_with("eval_")}
+    kwargs = {k: v for k, v in kwargs.items() if k.split("_")[0] not in ("train", "gen", "eval")}
+    return pipeline_class(
+        task=task,
+        train_adapter=train_adapter,
+        eval_adapter=eval_adapter,
+        train_args=train_args,
+        gen_args=gen_args,
+        eval_args=eval_args,
+        **kwargs,
+    )
 

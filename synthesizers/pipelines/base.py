@@ -42,6 +42,9 @@ class Pipeline():
             train_adapter: Optional[Union[Adapter, str]] = None,
             eval_adapter: Optional[Union[Adapter, str]] = None,
             output_format: Optional[Type] = None,
+            train_args: Optional[dict] = None,
+            gen_args: Optional[dict] = None,
+            eval_args: Optional[dict] = None,
             **kwargs,
         ):
         self.task = task
@@ -52,6 +55,9 @@ class Pipeline():
             eval_adapter = NAME_TO_ADAPTER[eval_adapter]()
         self.eval_adapter = eval_adapter
         self.output_format = output_format
+        self.train_args = train_args
+        self.gen_args = gen_args
+        self.eval_args = eval_args
         self.kwargs = kwargs
     def ensure_output_format(self, data, output_format=None, **kwargs):
         return ensure_format(data, (self.output_format if output_format is None else output_format,), **kwargs)
