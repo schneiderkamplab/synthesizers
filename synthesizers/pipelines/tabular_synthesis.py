@@ -23,7 +23,7 @@ class TabularSynthesisPipeline(Pipeline):
             model=state.model,
             **self.gen_args,
         )
-        if do_eval or self.kwargs["do_eval"]:
+        if do_eval and self.kwargs.get("do_eval", True):
             state.eval = self.eval_adapter.evaluate_generated(
                 original_data=state.train,
                 generated_data=state.synth,
