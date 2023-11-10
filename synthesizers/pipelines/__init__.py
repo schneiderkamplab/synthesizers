@@ -25,28 +25,33 @@ TASK_ALIASES = {
 SUPPORTED_TASKS = {
     "tabular-evaluation": {
         "impl": TabularEvaluationPipeline,
-        "adapter": SynthEvalAdapter(),
+        "train_adapter": None,
+        "eval_adapter": SynthEvalAdapter(),
         "type": "tabular",
     },
     "tabular-generation": {
         "impl": TabularGenerationPipeline,
-        "adapter": None,
+        "train_adapter": None,
+        "eval_adapter": None,
         "type": "tabular",
     },
     "tabular-synthesis": {
         "impl": TabularSynthesisPipeline,
-        "adapter": SynthCityAdapter(),
+        "train_adapter": SynthCityAdapter(),
+        "eval_adapter": SynthEvalAdapter(),
         "type": "tabular",
     },
     # This task is a special case as it's parametrized by EPSILON and DELTA.
     "tabular-synthesis-dp": {
         "impl": TabularSynthesisDPPipeline,
-        "adapter": SynthCityAdapter(plugin="dpgan"),
+        "train_adapter": SynthCityAdapter(plugin="dpgan"),
+        "eval_adapter": SynthEvalAdapter(),
         "type": "tabular",
     },
     "tabular-training": {
         "impl": TabularTrainingPipeline,
-        "adapter": SynthCityAdapter(),
+        "train_adapter": SynthCityAdapter(),
+        "eval_adapter": None,
         "type": "tabular",
     },
 }
@@ -76,15 +81,18 @@ def check_task(task: str) -> Tuple[str, Dict, Any]:
 
 def pipeline(
     task: str = None,
-    adapter: Optional[Union[Adapter, str]] = None,
+    train_adapter: Optional[Union[Adapter, str]] = None,
+    eval_adapter: Optional[Union[Adapter, str]] = None,
     pipeline_class: Optional[Type] = None,
     **kwargs,
 ):
     normalized_task, targeted_task, task_options = check_task(task)
     if pipeline_class is None:
         pipeline_class = targeted_task["impl"]
-    if adapter is None:
-        adapter = targeted_task["adapter"]
+    if train_adapter is None:
+        train_adapter = targeted_task["train_adapter"]
+    if eval_adapter is None:
+        eval_adapter = targeted_task["eval_adapter"]
 
-    return pipeline_class(task=task, adapter=adapter, **kwargs)
+    return pipeline_class(task=task, train_adapter=train_adapter, eval_adapter=eval_adapter, **kwargs)
 

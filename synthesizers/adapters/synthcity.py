@@ -18,7 +18,7 @@ class SynthCityAdapter(Adapter):
     def generate_data(self, count, model):
         result = model.model.generate(count=count)
         return result
-    def evaluate_generated(self, original_data, generated_data, evaluator_class=None):
+    def evaluate_generated(self, original_data, generated_data, holdout, evaluator_class=None):
         original_data = self.ensure_input_format(original_data)
         generated_data = self.ensure_input_format(generated_data)
         evaluator_class = self.evaluator_class if evaluator_class is None else evaluator_class

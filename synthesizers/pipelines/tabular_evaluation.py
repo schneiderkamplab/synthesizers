@@ -1,13 +1,16 @@
 from .base import Pipeline
+from ..utils.loading import StateDict
 
 class TabularEvaluationPipeline(Pipeline):
     def __call__(
         self,
-        original_data: object,
-        generated_data: object,
+        state: StateDict,
     ):
-        return self.adapter.evaluate_generated(
-            original_data=original_data,
-            generated_data=generated_data,
+        state = StateDict.wrap(state)
+        state.eval = self.eval_adapter.evaluate_generated(
+            original_data=state.train,
+            generated_data=state.synth,
+            hold_out=state.test,
             **self.kwargs,
         )
+        return state

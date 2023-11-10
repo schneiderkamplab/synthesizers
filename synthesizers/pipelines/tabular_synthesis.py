@@ -1,40 +1,39 @@
-from pandas import DataFrame
+from typing import Optional
 
 from .base import Pipeline
-from ..utils import loader
+from ..utils.loading import StateDict
 
 class TabularSynthesisPipeline(Pipeline):
     def __call__(
         self,
-        data: object,
-        count: int = None,
+        state: StateDict,
+        count: Optional[int] = None,
         do_eval: bool = True,
     ):
-        if type(data) == str:
-            data = loader(data)
+        state = StateDict.wrap(state)
         if count is None:
             # assumption that all formats implement __len__
-            count = len(data)
-        model = self.adapter.train_model(
-            data=data,
+            count = len(state.train)
+        state.model = self.train_adapter.train_model(
+            data=state.train,
             **self.kwargs,
         )
-        output = self.adapter.generate_data(
+        state.synth = self.train_adapter.generate_data(
             count=count,
-            model=model,
+            model=state.model,
             **self.kwargs,
         )
         if do_eval:
-            self.adapter.evaluate_generated(
-                original_data=data,
-                generated_data=output,
+            state.eval = self.eval_adapter.evaluate_generated(
+                original_data=state.train,
+                generated_data=state.synth,
+                hold_out=state.test,
                 **self.kwargs,
             )
-        if self.output_format is "auto" and type(data) != str:
-            output = self.ensure_output_format(output, output_format=type(data))
-        elif self.output_format is not None:
-            output = self.ensure_output_format(output)
-        return output
+        output_format = type(state.train) if self.output_format is "auto" else self.output_format
+        if output_format is not None:
+            self.synth = self.ensure_output_format(self.synth, output_format=output_format)
+        return state
 
 class TabularSynthesisDPPipeline(TabularSynthesisPipeline):
     pass

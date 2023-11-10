@@ -39,14 +39,18 @@ class PipelineRegistry:
 class Pipeline():
     def __init__(self,
             task: str,
-            adapter: Optional[Union[Adapter, str]] = None,
+            train_adapter: Optional[Union[Adapter, str]] = None,
+            eval_adapter: Optional[Union[Adapter, str]] = None,
             output_format: Optional[Type] = None,
             **kwargs,
         ):
         self.task = task
-        if isinstance(adapter, str):
-            adapter = NAME_TO_ADAPTER[adapter]()
-        self.adapter = adapter
+        if isinstance(train_adapter, str):
+            train_adapter = NAME_TO_ADAPTER[train_adapter]()
+        self.train_adapter = train_adapter
+        if isinstance(eval_adapter, str):
+            eval_adapter = NAME_TO_ADAPTER[eval_adapter]()
+        self.eval_adapter = eval_adapter
         self.output_format = output_format
         self.kwargs = kwargs
     def ensure_output_format(self, data, output_format=None, **kwargs):

@@ -1,16 +1,15 @@
 from .base import Pipeline
-from ..utils import loader
+from ..utils.loading import StateDict
 
 class TabularTrainingPipeline(Pipeline):
     def __call__(
         self,
-        data: object,
+        state: StateDict,
     ):
-        if type(data) == str:
-            data = loader(data)
-        model = self.adapter.train_model(
-            data=data,
+        state = StateDict.wrap(state)
+        state.model = self.train_adapter.train_model(
+            data=state.train,
             **self.kwargs,
         )
-        return model
+        return state
 
