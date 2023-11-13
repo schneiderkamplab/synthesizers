@@ -17,5 +17,5 @@ class SynthEvalAdapter(Adapter):
         generated_data = self.ensure_input_format(generated_data)
         evaluator = SynthEval(real=original_data, hold_out=hold_out, cat_cols=cat_cols, unique_threshold=unique_threshold)
         config = self.config if config is None else config
-        evaluator.evaluate(synthetic_dataframe=generated_data, analysis_target_var=target_col, presets_file=config)
-        return evaluator.res_dict
+        results = evaluator.evaluate(synthetic_dataframe=generated_data, analysis_target_var=target_col, presets_file=config)
+        return results
