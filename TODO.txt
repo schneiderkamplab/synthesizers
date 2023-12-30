@@ -1,3 +1,4 @@
+* save_pretrained and from_pretrained for statedicts
 * R synthpop as backends
 * output class for all pipelines with optional return_dict = True
 * standardized list of supported metrics (supported by any backend)
