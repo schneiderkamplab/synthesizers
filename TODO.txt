@@ -2,7 +2,6 @@
 * split pipeline
 * wait for syntheval to fix target_col==None and update package afterwards
 * use benchmark module from syntheval?
-* make sure count can be given for metapipeline "synthesize" (currently multiple values for keyword)
 * save data also to xlsx etc.
 * R synthpop as backends
 -- old - check if still applicable
