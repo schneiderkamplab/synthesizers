@@ -37,8 +37,8 @@ class TabularSynthesisPipeline(Pipeline):
                 train,
                 **split_args,
             )
-            state.train = train.reindex(index=range(len(train)))
-            state.test = test.reindex(index=range(len(test)))
+            state.train = train.reset_index(drop=True)
+            state.test = test.reset_index(drop=True)
         state.model = self.train_adapter.train_model(
             data=state.train,
             **self.train_args,

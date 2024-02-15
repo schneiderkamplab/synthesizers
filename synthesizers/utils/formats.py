@@ -118,19 +118,19 @@ class StateDict():
                         saver(value, path / f"{key}.pickle", output_format=output_format)
     def Synthesize(self, **kwargs):
         from ..pipelines import pipeline
-        return pipeline("synthesize")(self, **kwargs)
+        return pipeline("synthesize", **kwargs)(self)
     def Split(self, **kwargs):
         from ..pipelines import pipeline
-        return pipeline("split")(self, **kwargs)
+        return pipeline("split", **kwargs)(self)
     def Evaluate(self, **kwargs):
         from ..pipelines import pipeline
-        return pipeline("evaluate")(self, **kwargs)
+        return pipeline("evaluate", **kwargs)(self)
     def Train(self, **kwargs):
         from ..pipelines import pipeline
-        return pipeline("train")(self, **kwargs)
+        return pipeline("train", **kwargs)(self)
     def Generate(self, **kwargs):
         from ..pipelines import pipeline
-        return pipeline("generate")(self, **kwargs)
+        return pipeline("generate", **kwargs)(self)
     def load(name):
         path = Path(name)
         if not path.is_dir():

@@ -30,7 +30,6 @@ state.save("breast.xlsx", key="synth")
 # Development TODOs
 * implement save pipeline
 * update tests and test notebooks to reflect 1.0.0
-* implement functional versions for all pipelines
 * wait for syntheval to fix target_col==None and release 1.0.0 afterwards
 
 # Ideas for future development

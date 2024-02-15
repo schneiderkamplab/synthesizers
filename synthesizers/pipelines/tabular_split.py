@@ -26,8 +26,8 @@ class TabularSplitPipeline(Pipeline):
             train,
             **kwargs,
         )
-        state.train = train.reindex(index=range(len(train)))
-        state.test = test.reindex(index=range(len(test)))
+        state.train = train.reset_index(drop=True)
+        state.test = test.reset_index(drop=True)
         if self.output_format is not None:
             state.train = self.ensure_output_format(state.train)
             state.test = self.ensure_output_format(state.test)
