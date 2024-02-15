@@ -10,6 +10,7 @@ from ..adapters.base import (
 from .base import (
     PipelineRegistry,
 )
+from .identity import IdentityPipeline
 from .tabular_evaluation import TabularEvaluationPipeline
 from .tabular_generation import TabularGenerationPipeline
 from .tabular_synthesis import TabularSynthesisPipeline, TabularSynthesisDPPipeline
@@ -19,10 +20,17 @@ from .tabular_training import TabularTrainingPipeline
 TASK_ALIASES = {
     "evaluate": "tabular-evaluation",
     "generate": "tabular-generation",
+    "id": "identity",
     "synthesize": "tabular-synthesis",
     "train": "tabular-training",
 }
 SUPPORTED_TASKS = {
+    "identity": {
+        "impl": IdentityPipeline,
+        "train_adapter": None,
+        "eval_adapter": None,
+        "type": None,
+    },
     "tabular-evaluation": {
         "impl": TabularEvaluationPipeline,
         "train_adapter": None,
