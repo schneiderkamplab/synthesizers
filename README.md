@@ -29,7 +29,10 @@ state.save("breast.xlsx", key="synth")
 
 # Development TODOs
 * split pipeline (part of meta pipeline with split_ prefix, make shuffle and seed parameters)
+* implement save pipeline
 * update tests and test notebooks to reflect 1.0.0
+* have the id pipeline available in __init__.py as load instead of loader
+* implement functional versions for all pipelines
 * wait for syntheval to fix target_col==None and release 1.0.0 afterwards
 
 # Ideas for future development
