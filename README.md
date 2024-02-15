@@ -28,9 +28,9 @@ state.save("breast.xlsx", key="synth")
 ```
 
 # Development TODOs
-* id pipeline (do nothing)
-* split pipeline (percentage as float or absolute as int, shuffling, part of meta pipeline with split_ prefix)
-* wait for syntheval to fix target_col==None and update package to 2.1.0 afterwards
+* split pipeline (part of meta pipeline with split_ prefix, make shuffle and seed parameters)
+* update tests and test notebooks to reflect 1.0.0
+* wait for syntheval to fix target_col==None and release 1.0.0 afterwards
 
 # Ideas for future development
 * use benchmark module from syntheval?
