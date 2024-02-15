@@ -19,8 +19,13 @@ class TabularSplitPipeline(Pipeline):
                 kwargs["size"] = 0.8
         else:
             kwargs["size"] = size
+        kwargs["train_size"] = kwargs["size"]
+        del kwargs["size"]
         train = self.ensure_output_format(state.train, DataFrame)
-        state.train, state.test = train_test_split(train, train_size=kwargs["size"], shuffle=True, random_state=42)
+        state.train, state.test = train_test_split(
+            train,
+            **kwargs,
+        )
         if self.output_format is not None:
             state.train = self.ensure_output_format(state.train)
             state.test = self.ensure_output_format(state.test)
