@@ -1,5 +1,5 @@
 from .base import Pipeline
-from ..utils.loading import StateDict
+from ..utils.formats import StateDict
 
 class TabularEvaluationPipeline(Pipeline):
     def __call__(

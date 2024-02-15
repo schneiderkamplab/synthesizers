@@ -27,4 +27,4 @@ class AutoModel(Model):
         for file_name, model_class in FILE_TO_CLASS.items():
             if (path / file_name).is_file():
                 return model_class.from_pretrained(name)
-        raise RuntimeError(f"could not determine model type for {name} - expected on of: {', '.join(FILE_TO_CLASS.keys())}")
+        raise ValueError(f"could not determine model type for {name} - expected on of: {', '.join(FILE_TO_CLASS.keys())}")

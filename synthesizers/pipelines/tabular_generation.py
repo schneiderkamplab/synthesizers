@@ -3,7 +3,7 @@ from typing import Optional
 from ..adapters import *
 from .base import Pipeline
 from ..models.auto import MODEL_TO_ADAPTER
-from ..utils.loading import StateDict
+from ..utils.formats import StateDict
 
 class TabularGenerationPipeline(Pipeline):
     def __call__(

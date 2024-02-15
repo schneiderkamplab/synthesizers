@@ -1,7 +1,7 @@
 from typing import Optional
 
 from .base import Pipeline
-from ..utils.loading import StateDict
+from ..utils.formats import StateDict
 
 class TabularSynthesisPipeline(Pipeline):
     def __call__(
