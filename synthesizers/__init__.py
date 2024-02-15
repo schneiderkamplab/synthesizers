@@ -10,4 +10,5 @@ from .utils import (
 )
 from .pipelines import (
     pipeline,
+    Load,
 )

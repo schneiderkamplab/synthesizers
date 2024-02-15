@@ -22,10 +22,12 @@ class TabularSplitPipeline(Pipeline):
         kwargs["train_size"] = kwargs["size"]
         del kwargs["size"]
         train = self.ensure_output_format(state.train, DataFrame)
-        state.train, state.test = train_test_split(
+        train, test = train_test_split(
             train,
             **kwargs,
         )
+        state.train = train.reindex(index=range(len(train)))
+        state.test = test.reindex(index=range(len(test)))
         if self.output_format is not None:
             state.train = self.ensure_output_format(state.train)
             state.test = self.ensure_output_format(state.test)

@@ -125,3 +125,4 @@ def pipeline(
         **kwargs,
     )
 
+Load = pipeline("id")

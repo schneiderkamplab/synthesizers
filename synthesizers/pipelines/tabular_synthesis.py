@@ -33,10 +33,12 @@ class TabularSynthesisPipeline(Pipeline):
             split_args["train_size"] = split_args["size"]
             del split_args["size"]
             train = self.ensure_output_format(state.train, DataFrame)
-            state.train, state.test = train_test_split(
+            train, test = train_test_split(
                 train,
                 **split_args,
             )
+            state.train = train.reindex(index=range(len(train)))
+            state.test = test.reindex(index=range(len(test)))
         state.model = self.train_adapter.train_model(
             data=state.train,
             **self.train_args,
