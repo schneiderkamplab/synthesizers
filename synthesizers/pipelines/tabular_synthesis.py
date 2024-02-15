@@ -1,7 +1,7 @@
 from typing import Optional
 
 from .base import Pipeline
-from ..utils.loading import StateDict
+from ..utils.formats import StateDict
 
 class TabularSynthesisPipeline(Pipeline):
     def __call__(
@@ -12,14 +12,15 @@ class TabularSynthesisPipeline(Pipeline):
     ):
         state = StateDict.wrap(state)
         if count is None:
-            # assumption that all formats implement __len__
-            count = len(state.train)
+            if self.gen_args.get("count", None) is None:
+                self.gen_args["count"] = 1 if state.train is None else len(state.train)
+        else:
+            self.gen_args["count"] = count
         state.model = self.train_adapter.train_model(
             data=state.train,
             **self.train_args,
         )
         state.synth = self.train_adapter.generate_data(
-            count=count,
             model=state.model,
             **self.gen_args,
         )
