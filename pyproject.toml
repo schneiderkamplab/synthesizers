@@ -4,9 +4,9 @@ build-backend = "hatchling.build"
 
 [project]
 name = "synthesizers"
-version = "0.2.0"
+version = "1.0.0"
 authors = [
-  { name="Peter Schneider-Kamp"}
+  { name="Peter Schneider-Kamp" }
 ]
 
 description = "A meta framework for synthetic data generation."
