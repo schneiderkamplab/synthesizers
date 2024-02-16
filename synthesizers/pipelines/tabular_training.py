@@ -13,7 +13,7 @@ class TabularTrainingPipeline(Pipeline):
             data=state.train,
             **kwargs,
         )
-        if self.save_args["name"] is not None:
+        if self.save_args.get("name", None) is not None:
             state.Save(**self.save_args)
         return state
 

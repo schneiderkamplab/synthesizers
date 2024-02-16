@@ -55,7 +55,7 @@ class TabularSynthesisPipeline(Pipeline):
         output_format = type(state.train) if self.output_format is "auto" else self.output_format
         if output_format is not None:
             self.synth = self.ensure_output_format(self.synth, output_format=output_format)
-        if self.save_args["name"] is not None:
+        if self.save_args.get("name", None) is not None:
             state.Save(**self.save_args)
         return state
 

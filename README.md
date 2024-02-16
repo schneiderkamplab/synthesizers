@@ -11,6 +11,29 @@ The goal of synthesizers is to simnplify the use of existing frameworks for synt
 * datasets can be converted between list, Numpy, Pandas, and Huggingface datasets formats
 * datasets are automatically converted to the input format of synthesis or evaluation backends
 
+## Installation
+
+Simply install synthesizers using pip:
+```
+pip install synthesizers
+```
+
+With a virtual environment:
+```
+python -m virtualenv venv
+. venv/activate
+pip install synthesizers
+```
+
+With a Conda environment:
+```
+conda create -n synthesizers python=3.11
+conda activate synthesizers
+pip install synthesizers
+```
+
+## Usage
+
 The functional abstraction manipulates states that can be initalize by the pre-defined `Load` object and manipulated by functions such as the meta function `Synthesize`:
 ```
 from synthesizers import Load
@@ -44,7 +67,7 @@ Load("breast_state").Generate(count=10000).Save(name="breast.csv", key="synth")
 Internally, the functional abstraction instantiates pipelines to accomplish its functionality. These pipelines can be used as an expressive alternative. Here is a usage example with the synthesis meta pipeline, which again loads the breast cancer dataset from the Huggingface Hub, trains a GAN model, synthesizes a 10,000 rows synthetic dataset, evaluates it, and saves it in a JSON file:
 ```
 from synthesizers import pipeline
-pipeline("synthesize", split_size=0.8, gen_count=10000, eval_target_col="is_cancer", save_name="breast.json", save_key="synth")("mstzt/breast")
+pipeline("synthesize", split_size=0.8, gen_count=10000, eval_target_col="is_cancer", save_name="breast.json", save_key="synth")("mstz/breast")
 ```
 
 The meta pipeline pools the functionality of multiple base pipelines. The same functionality as in the above example might be accomplished with base pipelines:
@@ -58,18 +81,19 @@ state = pipeline("identity", save_name="breast.json", save_key="synth")
 ```
 
 Pipelines are exposed not only as an internal representation but provide the ability to reuse settings, e.g. by having a pipeline for training CTGANs. The following example also illustrates that functional and pipeline abstractions can readily be combined as preferred by the user:
+```
 from synthesizers import Load, pipeline
 s1 = Load("mstz/breast").Split()
 s2 = Load("julien-c/titanic-survival").Split()
 train = pipeline("train", plugin="ctgan")
-train(s1, save_name="breast.jsonl", save_key="synth")
-train(s2, save_name="titanic.jsonl", save_key="synth")
+train(s1).Generate(count=1000).Save(name="breast.jsonl", key="synth")
+train(s2).Generate(count=1000).Save(name="titanic.jsonl", key="synth")
 ```
 
-# Development TODOs for 1.0.0
+## Development TODOs for 1.0.0
 * test examples above and update tests and test notebooks to reflect 1.0.0
 
-# Ideas for future development
+## Ideas for future development
 * use benchmark module from syntheval?
 * standardized list of supported metrics (supported by any backend)
 * standardized list of supported generation methods (supported by any backend)

@@ -27,6 +27,6 @@ class TabularGenerationPipeline(Pipeline):
         )
         if self.output_format is not None:
             state.synth = self.ensure_output_format(state.synth)
-        if self.save_args["name"] is not None:
+        if self.save_args.get("name", None) is not None:
             state.Save(**self.save_args)
         return state
