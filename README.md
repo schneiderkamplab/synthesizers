@@ -13,19 +13,23 @@ The goal of synthesizers is to simnplify the use of existing frameworks for synt
 
 ## Installation
 
-Simply install synthesizers using pip:
+Simply install synthesizers using pip from PyPI:
 ```
 pip install synthesizers
 ```
+If you clone or downloaded the source code, you can also install it from the root directory of the repository:
+```
+pip install .
+```
 
-With a virtual environment:
+For ensuring the right dependencies, it is often preferable to create a virtual environment (here the directory `venv` in the current directory):
 ```
 python -m virtualenv venv
 . venv/activate
 pip install synthesizers
 ```
 
-With a Conda environment:
+Conda is a popular alternative:
 ```
 conda create -n synthesizers python=3.11
 conda activate synthesizers
