@@ -62,8 +62,8 @@ from synthesizers import Load, pipeline
 s1 = Load("mstz/breast").Split()
 s2 = Load("julien-c/titanic-survival").Split()
 train = pipeline("train", plugin="ctgan")
-train(s1).Save(name="breast.jsonl", key="synth")
-train(s2).Save(name="titanic.jsonl", key="synth")
+train(s1, save_name="breast.jsonl", save_key="synth")
+train(s2, save_name="titanic.jsonl", save_key="synth")
 ```
 
 # Development TODOs for 1.0.0
