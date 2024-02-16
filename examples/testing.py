@@ -5,7 +5,7 @@ import synthcity.plugins
 from synthesizers import pipeline
 from synthesizers.models import AutoModel
 from synthesizers.adapters import SynthPopAdapter
-from synthesizers.utils.formats import ensure_format, SUPPORTED_FORMATS
+from synthesizers.utils.formats import ensure_format, SUPPORTED_FORMATS, StateDict
 
 def lim_print(data, limit=800):
     res = repr(data).replace("\n","")
@@ -14,7 +14,6 @@ def lim_print(data, limit=800):
 
 print("LOADING TEST DATASET")
 in_data = load_dataset("mstz/breast", split='train[:100]')
-
 print("TESTING FORMAT CONVERSIONS")
 data = {}
 for format in SUPPORTED_FORMATS:
@@ -34,53 +33,57 @@ p = pipeline("train")
 model = p(in_data)
 lim_print(model)
 model.model.save_pretrained("test/synthcity_model")
-p = pipeline("train", adapter="synthpop")
+p = pipeline("train", train_adapter="synthpop")
 model = p(in_data)
 lim_print(model)
 model.model.save_pretrained("test/synthpop_model")
 
 print("TESTING GENERATION")
 model = AutoModel.from_pretrained("test/synthcity_model")
-p = pipeline("generate", model=model)
-out_data = p(count=100)
+state = StateDict(model=model)
+p = pipeline("generate")
+out_data = p(state, count=100)
 lim_print(out_data)
 model = AutoModel.from_pretrained("test/synthpop_model")
-p = pipeline("generate", model=model)
-out_data = p(count=100)
+state = StateDict(model=model)
+p = pipeline("generate")
+out_data = p(state, count=100)
 lim_print(out_data)
 
 print("TESTING SYNTHEVAL")
-p = pipeline("evaluate", adapter="syntheval", target_col="is_cancer")
-result = p(in_data, out_data)
+p = pipeline("evaluate", eval_adapter="syntheval", target_col="is_cancer")
+state = StateDict(train=in_data, synth=out_data.synth)
+result = p(state)
 lim_print(result)
-p = pipeline("evaluate", adapter="syntheval")
-result = p(in_data, out_data)
+p = pipeline("evaluate", eval_adapter="syntheval")
+result = p(state)
 lim_print(result)
-#p = pipeline("evaluate", adapter="syntheval", config="fast")
-#result = p(in_data, out_data)
-#lim_print(result)
-p = pipeline("evaluate", adapter="syntheval", target_col="is_cancer")
-result = p(in_data, out_data)
+p = pipeline("evaluate", eval_adapter="syntheval", config="fast_eval")
+result = p(state)
+lim_print(result)
+p = pipeline("evaluate", eval_adapter="syntheval", target_col="is_cancer")
+result = p(state)
 lim_print(result)
 
 print("TESTING SYNTHESIS")
 p = pipeline("synthesize")
 out_data = p(in_data)
 lim_print(out_data)
-p = pipeline("synthesize", adapter=SynthPopAdapter())
+p = pipeline("synthesize", train_adapter=SynthPopAdapter())
 out_data = p(in_data)
 lim_print(out_data)
 
 print("TESTING EVALUATION")
 print("default", end=": ")
 p = pipeline("evaluate")
-result = p(in_data, out_data)
+state = StateDict(train=in_data, synth=out_data.synth)
+result = p(state)
 lim_print(result)
 for value in synthcity.metrics.eval_statistical.__dict__.values():
     try:
         if value.type() == "stats":
             p = pipeline("evaluate", evaluator_class=value)
-            result = p(in_data, out_data)
+            result = p(state)
             print(value.name(), end=": ")
             lim_print(result)
     except:

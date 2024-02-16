@@ -6,6 +6,8 @@ class TabularEvaluationPipeline(Pipeline):
         self,
         state: StateDict,
     ):
+        print(type(state))
+        print(type(state))
         state = StateDict.wrap(state)
         kwargs = dict(self.kwargs)
         kwargs.update(self.eval_args)
