@@ -90,6 +90,9 @@ train(s1).Generate(count=1000).Save(name="breast.jsonl", key="synth")
 train(s2).Generate(count=1000).Save(name="titanic.jsonl", key="synth")
 ```
 
+The plugins depend on the backend used. The standard backend for generation is [synthcity](https://github.com/vanderschaarlab/synthcity), which offers a variety of plugins including `adsgan`, `ctgan`, `tvae`, and `bayesian_network`.
+For evaluation, the standard backend is [SynthEval](https://github.com/schneiderkamplab/syntheval).
+
 ## Development TODOs for 1.0.0
 * test examples above and update tests and test notebooks to reflect 1.0.0
 
