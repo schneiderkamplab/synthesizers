@@ -55,7 +55,7 @@ This version can be used to resuse intermediate states, e.g., to generate and sa
 from synthesizers import Load
 state = Load("mstz/breast").Split(size=0.8).Train()
 for count in (100, 1000, 10000, 100000):
-    state.Generate(count=count).Save(name=f"breast-{count}.csv")
+    state.Generate(count=count).Save(name=f"breast-{count}.csv", key="synth")
 ```
 It is also useful if one wants to store the intermediate state to the file system:
 ```
