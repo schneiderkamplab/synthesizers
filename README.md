@@ -13,19 +13,23 @@ The goal of synthesizers is to simnplify the use of existing frameworks for synt
 
 ## Installation
 
-Simply install synthesizers using pip:
+Simply install synthesizers using pip from PyPI:
 ```
 pip install synthesizers
 ```
+If you clone or downloaded the source code, you can also install it from the root directory of the repository:
+```
+pip install .
+```
 
-With a virtual environment:
+For ensuring the right dependencies, it is often preferable to create a virtual environment (here the directory `venv` in the current directory):
 ```
 python -m virtualenv venv
 . venv/activate
 pip install synthesizers
 ```
 
-With a Conda environment:
+Conda is a popular alternative:
 ```
 conda create -n synthesizers python=3.11
 conda activate synthesizers
@@ -51,7 +55,7 @@ This version can be used to resuse intermediate states, e.g., to generate and sa
 from synthesizers import Load
 state = Load("mstz/breast").Split(size=0.8).Train()
 for count in (100, 1000, 10000, 100000):
-    state.Generate(count=count).Save(name=f"breast-{count}.csv")
+    state.Generate(count=count).Save(name=f"breast-{count}.csv", key="synth")
 ```
 It is also useful if one wants to store the intermediate state to the file system:
 ```
@@ -89,6 +93,9 @@ train = pipeline("train", plugin="ctgan")
 train(s1).Generate(count=1000).Save(name="breast.jsonl", key="synth")
 train(s2).Generate(count=1000).Save(name="titanic.jsonl", key="synth")
 ```
+
+The plugins depend on the backend used. The standard backend for generation is [synthcity](https://github.com/vanderschaarlab/synthcity), which offers a variety of plugins including `adsgan`, `ctgan`, `tvae`, and `bayesian_network`.
+For evaluation, the standard backend is [SynthEval](https://github.com/schneiderkamplab/syntheval).
 
 ## Development TODOs for 1.0.0
 * test examples above and update tests and test notebooks to reflect 1.0.0
