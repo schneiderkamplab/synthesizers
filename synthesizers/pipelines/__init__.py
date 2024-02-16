@@ -10,8 +10,10 @@ from ..adapters.base import (
 from .base import (
     PipelineRegistry,
 )
+from .identity import IdentityPipeline
 from .tabular_evaluation import TabularEvaluationPipeline
 from .tabular_generation import TabularGenerationPipeline
+from .tabular_split import TabularSplitPipeline
 from .tabular_synthesis import TabularSynthesisPipeline, TabularSynthesisDPPipeline
 from .tabular_training import TabularTrainingPipeline
 
@@ -19,10 +21,18 @@ from .tabular_training import TabularTrainingPipeline
 TASK_ALIASES = {
     "evaluate": "tabular-evaluation",
     "generate": "tabular-generation",
+    "id": "identity",
+    "split": "tabular-split",
     "synthesize": "tabular-synthesis",
     "train": "tabular-training",
 }
 SUPPORTED_TASKS = {
+    "identity": {
+        "impl": IdentityPipeline,
+        "train_adapter": None,
+        "eval_adapter": None,
+        "type": None,
+    },
     "tabular-evaluation": {
         "impl": TabularEvaluationPipeline,
         "train_adapter": None,
@@ -31,6 +41,12 @@ SUPPORTED_TASKS = {
     },
     "tabular-generation": {
         "impl": TabularGenerationPipeline,
+        "train_adapter": None,
+        "eval_adapter": None,
+        "type": "tabular",
+    },
+    "tabular-split": {
+        "impl": TabularSplitPipeline,
         "train_adapter": None,
         "eval_adapter": None,
         "type": "tabular",
@@ -96,6 +112,8 @@ def pipeline(
     train_args = {k.split("train_")[1]: v for k, v in kwargs.items() if k.startswith("train_")}
     gen_args = {k.split("gen_")[1]: v for k, v in kwargs.items() if k.startswith("gen_")}
     eval_args = {k.split("eval_")[1]: v for k, v in kwargs.items() if k.startswith("eval_")}
+    split_args = {k.split("split_")[1]: v for k, v in kwargs.items() if k.startswith("split_")}
+    save_args = {k.split("save_")[1]: v for k, v in kwargs.items() if k.startswith("save_")}
     kwargs = {k: v for k, v in kwargs.items() if k.split("_")[0] not in ("train", "gen", "eval")}
     return pipeline_class(
         task=task,
@@ -104,6 +122,9 @@ def pipeline(
         train_args=train_args,
         gen_args=gen_args,
         eval_args=eval_args,
+        split_args=split_args,
+        save_args=save_args,
         **kwargs,
     )
 
+Load = pipeline("id")

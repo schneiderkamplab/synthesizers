@@ -15,4 +15,6 @@ class TabularEvaluationPipeline(Pipeline):
             hold_out=state.test,
             **kwargs,
         )
+        if self.save_args.get("name", None) is not None:
+            state.Save(**self.save_args)
         return state

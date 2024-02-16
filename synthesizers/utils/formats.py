@@ -104,7 +104,7 @@ class StateDict():
         return repr(self.__dict__)
     def __str__(self):
         return str(self.__dict__)
-    def save(self, name, output_format=None, key=None): # TODO: enable different output_formats and their recognition on load time
+    def Save(self, name, output_format=None, key=None):
         if key is not None:
             saver(self.__dict__[key], name, output_format=output_format)
         else:
@@ -116,7 +116,22 @@ class StateDict():
                         value.save_pretrained(name)
                     else:
                         saver(value, path / f"{key}.pickle", output_format=output_format)
-    def load(name, input_format=None):
+    def Synthesize(self, **kwargs):
+        from ..pipelines import pipeline
+        return pipeline("synthesize", **kwargs)(self)
+    def Split(self, **kwargs):
+        from ..pipelines import pipeline
+        return pipeline("split", **kwargs)(self)
+    def Evaluate(self, **kwargs):
+        from ..pipelines import pipeline
+        return pipeline("evaluate", **kwargs)(self)
+    def Train(self, **kwargs):
+        from ..pipelines import pipeline
+        return pipeline("train", **kwargs)(self)
+    def Generate(self, **kwargs):
+        from ..pipelines import pipeline
+        return pipeline("generate", **kwargs)(self)
+    def load(name):
         path = Path(name)
         if not path.is_dir():
             raise RuntimeError(f"invalid statel directory {name}")
