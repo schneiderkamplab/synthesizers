@@ -31,4 +31,6 @@ class TabularSplitPipeline(Pipeline):
         if self.output_format is not None:
             state.train = self.ensure_output_format(state.train)
             state.test = self.ensure_output_format(state.test)
+        if self.save_args["name"] is not None:
+            state.Save(**self.save_args)
         return state

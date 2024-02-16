@@ -113,6 +113,7 @@ def pipeline(
     gen_args = {k.split("gen_")[1]: v for k, v in kwargs.items() if k.startswith("gen_")}
     eval_args = {k.split("eval_")[1]: v for k, v in kwargs.items() if k.startswith("eval_")}
     split_args = {k.split("split_")[1]: v for k, v in kwargs.items() if k.startswith("split_")}
+    save_args = {k.split("save_")[1]: v for k, v in kwargs.items() if k.startswith("save_")}
     kwargs = {k: v for k, v in kwargs.items() if k.split("_")[0] not in ("train", "gen", "eval")}
     return pipeline_class(
         task=task,
@@ -122,6 +123,7 @@ def pipeline(
         gen_args=gen_args,
         eval_args=eval_args,
         split_args=split_args,
+        save_args=save_args,
         **kwargs,
     )
 

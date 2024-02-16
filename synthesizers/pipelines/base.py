@@ -46,6 +46,7 @@ class Pipeline():
             gen_args: Optional[dict] = None,
             eval_args: Optional[dict] = None,
             split_args: Optional[dict] = None,
+            save_args: Optional[dict] = None,
             **kwargs,
         ):
         self.task = task
@@ -60,6 +61,7 @@ class Pipeline():
         self.gen_args = gen_args
         self.eval_args = eval_args
         self.split_args = split_args
+        self.save_args = save_args
         self.kwargs = kwargs
     def ensure_output_format(self, data, output_format=None, **kwargs):
         return ensure_format(data, (self.output_format if output_format is None else output_format,), **kwargs)
