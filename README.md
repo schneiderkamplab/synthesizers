@@ -5,7 +5,7 @@ The goal of synthesizers is to simnplify the use of existing frameworks for synt
 * All basic operations are available as functional and pipeline abstractions that transform states.
 * States keep track of datasets, models, and evaluation results.
 * A meta pipeline allows for very simple but expressive synthetic data generation.
-* Datasets are read from CSV, JSON, JSONL, and Excel (.xlsx) files.
+* Datasets are read from CSV, TSV, JSON, JSONL, Python Pickle (.pickle), and Excel (.xlsx) files.
 * Datasets can be downloaded from the Huggingface Hub.
 * States including datasets and models can be saved and loaded from disk.
 * Datasets can be converted between list, Numpy, Pandas, and Huggingface datasets formats.
@@ -100,9 +100,6 @@ train(s2).Generate(count=1000).Save(name="titanic.jsonl", key="synth")
 
 The plugins depend on the backend used. The standard backend for generation is [synthcity](https://github.com/vanderschaarlab/synthcity), which offers a variety of plugins including `adsgan`, `ctgan`, `tvae`, and `bayesian_network`.
 For evaluation, the standard backend is [SynthEval](https://github.com/schneiderkamplab/syntheval).
-
-## Development TODOs for 1.0.0
-* test examples above and update tests and test notebooks to reflect 1.0.0
 
 ## Ideas for future development
 * use benchmark module from syntheval?
