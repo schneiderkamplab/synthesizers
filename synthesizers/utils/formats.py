@@ -162,6 +162,12 @@ def saver(data, name, output_format=None, key=None):
         elif str(name).endswith(".csv"):
             data = ensure_format(data, target_formats=[DataFrame])
             data.to_csv(name)
+        elif str(name).endswith(".tsv"):
+            data = ensure_format(data, target_formats=[DataFrame])
+            data.to_csv(name, sep="\t")
+        elif str(name).endswith(".pickle"):
+            with open(name, "wb") as f:
+                pickle.dump(data, f)
         else:
             if output_format is not None:
                 data = ensure_format(data, output_format)
