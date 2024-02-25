@@ -75,6 +75,36 @@ def ensure_format(data, target_formats, **kwargs):
             raise ValueError(f"cannot convert {source_format} to {target_format}")
         raise ValueError(f"cannot convert {source_format} to any of {target_formats}")
 
+class MultiStateDict():
+    def __init__(self, states=[]) -> None:
+        self.states = states
+    def Save(self, name, output_format=None, key=None):
+        if key is not None:
+            file_ext = str(name).split(".")[-1]
+            file_name = str(name).split(f'.{file_ext}')[0]
+            for i, state in enumerate(self.states):
+                state.Save(f'{file_name}_{i}.{file_ext}', output_format=output_format, key=key)
+        else:
+            for i, state in enumerate(self.states):
+                state.Save(f'{name}_{i}', output_format=output_format)
+    def Synthesize(self, **kwargs):
+        return MultiStateDict([state.Synthesize(**kwargs) for state in self.states])
+    def Split(self, **kwargs):
+        return MultiStateDict([state.Split(**kwargs) for state in self.states])
+    def Evaluate(self, **kwargs):
+        return MultiStateDict([state.Evaluate(**kwargs) for state in self.states])
+    def Train(self, **kwargs):
+        return MultiStateDict([state.Train(**kwargs) for state in self.states])
+    def Generate(self, **kwargs):
+        return MultiStateDict([state.Generate(**kwargs) for state in self.states])
+
+# TODO: Load is a function that takes multiple arguments and returns a StateDict if only one is given or a MultiStateDict if more than one is given
+# TODO: implement overwrite parameter to multistatedict/statedict/Load with Config(overwrite=...), three values:
+# TODO: copy: return multistatedict if a value would be overwritten; overwrite: just overwrite the value; raise: raise an error if a value would be overwritten
+# TODO: parallelize the pipeline calls for MultiStateDict
+# TODO: implement multiple parameters for plugin in Train and Synthesize
+# TODO: MultiStateDict renamed to State, all working on State instead of StateDict
+
 class StateDict():
     def __init__(self, train=None, test=None, synth=None, model=None, eval=None):
         self.train = train
@@ -84,7 +114,7 @@ class StateDict():
         self.eval = eval
     def wrap(data):
         data_format = type(data)
-        if data_format == StateDict:
+        if data_format == StateDict or data_format == MultiStateDict:
             return data.clone()
         if data_format in (list, ndarray, DataFrame, Dataset, GenericDataLoader):
             return StateDict(train=data)

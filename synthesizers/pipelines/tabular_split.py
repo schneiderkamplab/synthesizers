@@ -6,12 +6,12 @@ from .base import Pipeline
 from ..utils.formats import StateDict
 
 class TabularSplitPipeline(Pipeline):
-    def __call__(
+
+    def _call(
         self,
         state: StateDict,
         size: Optional[Union[int, float]] = None,
     ):
-        state = StateDict.wrap(state)
         kwargs = dict(self.kwargs)
         kwargs.update(self.split_args)
         if size is None:
@@ -31,6 +31,4 @@ class TabularSplitPipeline(Pipeline):
         if self.output_format is not None:
             state.train = self.ensure_output_format(state.train)
             state.test = self.ensure_output_format(state.test)
-        if self.save_args.get("name", None) is not None:
-            state.Save(**self.save_args)
         return state

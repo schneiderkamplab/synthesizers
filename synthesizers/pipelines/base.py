@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Optional, Tuple, Type, Union
 
 from ..adapters import NAME_TO_ADAPTER
 from ..adapters.base import Adapter
-from ..utils import ensure_format
+from ..utils import ensure_format, MultiStateDict, StateDict
 from ..utils import logging
 
 logger = logging.get_logger(__name__)
@@ -63,5 +63,27 @@ class Pipeline():
         self.split_args = split_args
         self.save_args = save_args
         self.kwargs = kwargs
+
+    def __call__(
+        self,
+        state: Union[StateDict, MultiStateDict],
+    ):
+        state = StateDict.wrap(state)
+        states = state.states if isinstance(state, MultiStateDict) else [state]
+        states = [self._call_one(state) for state in states] #TODO: parallelize this
+        new_states = []
+        for state in states:
+            if isinstance(state, MultiStateDict):
+                new_states.extend(state.states)
+            else:
+                new_states.append(state)
+        return new_states[0] if len(new_states) == 1 else MultiStateDict(new_states)
+
+    def _call_one(self, state: StateDict):
+        state = self._call(state)
+        if self.save_args.get("name", None) is not None:
+            state.Save(**self.save_args)
+        return state
+
     def ensure_output_format(self, data, output_format=None, **kwargs):
         return ensure_format(data, (self.output_format if output_format is None else output_format,), **kwargs)

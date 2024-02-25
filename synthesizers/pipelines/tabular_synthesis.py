@@ -3,23 +3,26 @@ from sklearn.model_selection import train_test_split
 from typing import Optional, Union
 
 from .base import Pipeline
-from ..utils.formats import StateDict
+from ..utils.formats import MultiStateDict, StateDict
 
 class TabularSynthesisPipeline(Pipeline):
-    def __call__(
+
+    def _call(
         self,
         state: StateDict,
         gen_count: Optional[int] = None,
         split_size: Optional[Union[int, float]] = None,
         do_eval: bool = True,
     ):
-        state = StateDict.wrap(state)
         gen_args = dict(self.gen_args)
         if gen_count is None:
             if gen_args.get("count", None) is None:
                 gen_args["count"] = 1 if state.train is None else len(state.train)
         else:
             gen_args["count"] = gen_count
+        if isinstance(gen_args["count"], list):
+            states = [self._call(state.clone(), gen_count=c) for c in gen_args["count"]]
+            return MultiStateDict(states)
         split_args = dict(self.split_args)
         if split_size is None:
             if split_args.get("train_size", None) is None:
@@ -55,8 +58,6 @@ class TabularSynthesisPipeline(Pipeline):
         output_format = type(state.train) if self.output_format is "auto" else self.output_format
         if output_format is not None:
             self.synth = self.ensure_output_format(self.synth, output_format=output_format)
-        if self.save_args.get("name", None) is not None:
-            state.Save(**self.save_args)
         return state
 
 class TabularSynthesisDPPipeline(TabularSynthesisPipeline):
