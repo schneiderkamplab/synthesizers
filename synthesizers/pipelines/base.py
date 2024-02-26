@@ -71,7 +71,7 @@ class Pipeline():
         state: State,
     ) -> State:
         state = State.wrap(state)
-        states = (self._call(state_dict) for state_dict in state.states_dicts) #TODO: parallelize this
+        states = (self._call(state_dict) for state_dict in state.state_dicts) #TODO: parallelize this
         new_state = State(state_dicts=list(chain.from_iterable(states)))
         if self.save_args.get("name", None) is not None:
             new_state.Save(**self.save_args)

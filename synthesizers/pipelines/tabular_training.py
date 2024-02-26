@@ -1,3 +1,4 @@
+from collections.abc import Iterable
 from itertools import chain
 from typing import List, Optional, Union
 
@@ -15,7 +16,7 @@ class TabularTrainingPipeline(Pipeline):
         kwargs.update(self.train_args)
         if plugin is not None:
             kwargs["plugin"] = plugin
-        if "plugin" in kwargs and isinstance(kwargs["plugin"], list):
+        if "plugin" in kwargs and isinstance(kwargs["plugin"], Iterable):
             state_dicts = (self._call(state.clone(), plugin=p) for p in kwargs["plugin"]) #TODO: parallelize this
             return list(chain.from_iterable(state_dicts))
         state.model = self.train_adapter.train_model(

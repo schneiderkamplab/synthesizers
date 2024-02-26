@@ -99,7 +99,7 @@ class StateDict():
         model=None,
         eval=None,
     ) -> None:
-        assert isinstance(model, Model)
+        assert model is None or isinstance(model, Model)
         self.train = train
         self.test = test
         self.synth = synth
@@ -170,12 +170,12 @@ class State():
         self,
         state_dicts: List[StateDict],
     ) -> None:
-        assert self.state_dicts
+        assert state_dicts
         self.state_dicts = state_dicts
     def wrap(data: Any):
         if isinstance(data, State):
             return data.clone()
-        if isinstance(data, Iterable) and not isinstance(data, list):
+        if isinstance(data, Iterable) and not isinstance(data, list) and not isinstance(data, str):
             state_dicts = [StateDict.wrap(d) for d in data]
         else:
             state_dicts = [StateDict.wrap(data)]
@@ -199,17 +199,18 @@ class State():
         assert key is None or key in STATE_DICT_FIELDS
         assert index is None or (isinstance(index, int) and 0 <= index < len(self.state_dicts))
         if index is not None:
-            self.state_dicts[index].Save(name, output_format=output_format, key=key)
+            self.state_dicts[index].save(name, output_format=output_format, key=key)
         elif len(self.state_dicts) == 1:
-            self.state_dicts[0].Save(name, output_format=output_format, key=key)
+            self.state_dicts[0].save(name, output_format=output_format, key=key)
         elif key is not None:
             file_ext = str(name).split(".")[-1]
             file_name = str(name).split(f'.{file_ext}')[0]
-            for i, state in enumerate(self.states):
-                state.Save(f'{file_name}_{i}.{file_ext}', output_format=output_format, key=key)
+            for i, state_dict in enumerate(self.state_dicts):
+                state_dict.save(f'{file_name}_{i}.{file_ext}', output_format=output_format, key=key)
         else:
-            for i, state in enumerate(self.states):
-                state.Save(f'{name}_{i}', output_format=output_format)
+            for i, state_dict in enumerate(self.state_dicts):
+                state_dict.save(f'{name}_{i}', output_format=output_format)
+        return self
     def Synthesize(self, **kwargs):
         from ..pipelines import pipeline
         return pipeline("synthesize", **kwargs)(self)

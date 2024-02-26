@@ -1,3 +1,4 @@
+from collections.abc import Iterable
 from itertools import chain
 from pandas import DataFrame
 from sklearn.model_selection import train_test_split
@@ -20,7 +21,7 @@ class TabularSplitPipeline(Pipeline):
                 kwargs["size"] = 0.8
         else:
             kwargs["size"] = size
-        if isinstance(kwargs["size"], list):
+        if isinstance(kwargs["size"], Iterable):
             state_dicts = (self._call(state.clone(), size=s) for s in kwargs["size"]) #TODO: parallelize this
             return list(chain.from_iterable(state_dicts))
         kwargs["train_size"] = kwargs["size"]

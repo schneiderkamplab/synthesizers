@@ -1,3 +1,4 @@
+from collections.abc import Iterable
 from itertools import chain
 from typing import List, Optional, Union
 
@@ -22,7 +23,7 @@ class TabularGenerationPipeline(Pipeline):
             kwargs["count"] = count
         if self.train_adapter is None:
             self.train_adapter = eval(MODEL_TO_ADAPTER[state.model.__class__])()
-        if isinstance(kwargs["count"], list):
+        if isinstance(kwargs["count"], Iterable):
             state_dicts = (self._call(state.clone(), count=c) for c in kwargs["count"]) #TODO: parallelize this
             return list(chain.from_iterable(state_dicts))
         state.synth = self.train_adapter.generate_data(
