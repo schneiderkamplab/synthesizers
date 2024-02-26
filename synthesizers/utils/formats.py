@@ -1,6 +1,7 @@
 from collections.abc import Iterable
 from datasets import Dataset, DatasetDict, load_dataset
 from numpy import ndarray, array
+from os import PathLike
 from os.path import isdir, isfile
 from pandas import DataFrame, read_excel
 from pathlib import Path
@@ -119,7 +120,7 @@ class StateDict():
                 model=data.get("model", None),
                 eval=data.get("eval", None),
             )
-        if data_format in (str, Path):
+        if isinstance(data, str) or isinstance(data, PathLike):
             return loader(data)
         raise ValueError(f"cannot wrap {data_format}")
     def clone(self):
@@ -134,7 +135,7 @@ class StateDict():
         output_format: Any = None,
         key: str = None,
     ) -> None:
-        assert type(name) in (str, Path)
+        assert isinstance(name, str) or isinstance(name, PathLike)
         assert output_format is None or output_format in SUPPORTED_FORMATS
         assert key is None or key in STATE_DICT_FIELDS
         if key is not None:
@@ -150,7 +151,7 @@ class StateDict():
                     else:
                         saver(value, path / f"{key}.pickle", output_format=output_format)
     def load(name: Union[str, Path]):
-        assert type(name) in (str, Path)
+        assert isinstance(name, str) or isinstance(name, PathLike)
         path = Path(name)
         if not path.is_dir():
             raise RuntimeError(f"invalid state directory {name}")
@@ -194,7 +195,7 @@ class State():
         key: str = None,
         index: int =None,
     ) -> None:
-        assert type(name) in (str, Path)
+        assert isinstance(name, str) or isinstance(name, PathLike)
         assert output_format is None or output_format in SUPPORTED_FORMATS
         assert key is None or key in STATE_DICT_FIELDS
         assert index is None or (isinstance(index, int) and 0 <= index < len(self.state_dicts))
@@ -233,7 +234,7 @@ def saver(
     output_format = None,
     key: str = None,
 ) -> None:
-    assert type(name) in (str, Path)
+    assert isinstance(name, str) or isinstance(name, PathLike)
     assert output_format is None or output_format in SUPPORTED_FORMATS
     assert key is None or key in STATE_DICT_FIELDS
     if isinstance(data, StateDict):
@@ -263,7 +264,7 @@ def saver(
             raise ValueError(f"unknown format for {name}")
 
 def loader(name: Union[str, Path]) -> StateDict:
-    assert type(name) in (str, Path)
+    assert isinstance(name, str) or isinstance(name, PathLike)
     if isfile(name):
         extension = str(name).split(".")[1].lower()
         if extension == "pickle":
