@@ -1,17 +1,18 @@
+from itertools import chain
 from pandas import DataFrame
 from sklearn.model_selection import train_test_split
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 from .base import Pipeline
-from ..utils.formats import StateDict
+from ..utils.formats import State, StateDict
 
 class TabularSplitPipeline(Pipeline):
 
     def _call(
         self,
         state: StateDict,
-        size: Optional[Union[int, float]] = None,
-    ):
+        size: Optional[Union[int, float, List[Union[int, float]]]] = None,
+    ) -> List[StateDict]:
         kwargs = dict(self.kwargs)
         kwargs.update(self.split_args)
         if size is None:
@@ -19,6 +20,9 @@ class TabularSplitPipeline(Pipeline):
                 kwargs["size"] = 0.8
         else:
             kwargs["size"] = size
+        if isinstance(kwargs["size"], list):
+            state_dicts = (self._call(state.clone(), size=s) for s in kwargs["size"]) #TODO: parallelize this
+            return list(chain.from_iterable(state_dicts))
         kwargs["train_size"] = kwargs["size"]
         del kwargs["size"]
         train = self.ensure_output_format(state.train, DataFrame)
@@ -31,4 +35,4 @@ class TabularSplitPipeline(Pipeline):
         if self.output_format is not None:
             state.train = self.ensure_output_format(state.train)
             state.test = self.ensure_output_format(state.test)
-        return state
+        return [state]
