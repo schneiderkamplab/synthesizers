@@ -11,7 +11,7 @@ class TabularSplitPipeline(Pipeline):
 
     def _call(
         self,
-        state: StateDict,
+        state_dict: StateDict,
         size: Optional[Union[int, float, List[Union[int, float]]]] = None,
     ) -> List[StateDict]:
         kwargs = dict(self.kwargs)
@@ -22,18 +22,18 @@ class TabularSplitPipeline(Pipeline):
         else:
             kwargs["size"] = size
         if isinstance(kwargs["size"], Iterable) and not isinstance(kwargs["size"], str):
-            state_dicts = (self._call(state.clone(), size=s) for s in kwargs["size"]) #TODO: parallelize this
+            state_dicts = (self._call(state_dict.clone(), size=s) for s in kwargs["size"]) #TODO: parallelize this
             return list(chain.from_iterable(state_dicts))
         kwargs["train_size"] = kwargs["size"]
         del kwargs["size"]
-        train = self.ensure_output_format(state.train, DataFrame)
+        train = self.ensure_output_format(state_dict.train, DataFrame)
         train, test = train_test_split(
             train,
             **kwargs,
         )
-        state.train = train.reset_index(drop=True)
-        state.test = test.reset_index(drop=True)
+        state_dict.train = train.reset_index(drop=True)
+        state_dict.test = test.reset_index(drop=True)
         if self.output_format is not None:
-            state.train = self.ensure_output_format(state.train)
-            state.test = self.ensure_output_format(state.test)
-        return [state]
+            state_dict.train = self.ensure_output_format(state_dict.train)
+            state_dict.test = self.ensure_output_format(state_dict.test)
+        return [state_dict]

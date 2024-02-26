@@ -7,14 +7,14 @@ class TabularEvaluationPipeline(Pipeline):
 
     def _call(
         self,
-        state: StateDict,
+        state_dict: StateDict,
     ) -> List[StateDict]:
         kwargs = dict(self.kwargs)
         kwargs.update(self.eval_args)
-        state.eval = self.eval_adapter.evaluate_generated(
-            original_data=state.train,
-            generated_data=state.synth,
-            hold_out=state.test,
+        state_dict.eval = self.eval_adapter.evaluate_generated(
+            original_data=state_dict.train,
+            generated_data=state_dict.synth,
+            hold_out=state_dict.test,
             **kwargs,
         )
-        return [state]
+        return [state_dict]

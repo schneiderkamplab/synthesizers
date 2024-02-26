@@ -11,25 +11,25 @@ class TabularGenerationPipeline(Pipeline):
 
     def _call(
         self,
-        state: StateDict,
+        state_dict: StateDict,
         count: Optional[Union[int, List[int]]] = None,
     ) -> List[StateDict]:
         kwargs = dict(self.kwargs)
         kwargs.update(self.gen_args)
         if count is None:
             if kwargs.get("count", None) is None:
-                kwargs["count"] = 1 if state.train is None else len(state.train)
+                kwargs["count"] = 1 if state_dict.train is None else len(state_dict.train)
         else:
             kwargs["count"] = count
         if self.train_adapter is None:
-            self.train_adapter = eval(MODEL_TO_ADAPTER[state.model.__class__])()
+            self.train_adapter = eval(MODEL_TO_ADAPTER[state_dict.model.__class__])()
         if isinstance(kwargs["count"], Iterable) and not isinstance(kwargs["count"], str):
-            state_dicts = (self._call(state.clone(), count=c) for c in kwargs["count"]) #TODO: parallelize this
+            state_dicts = (self._call(state_dict.clone(), count=c) for c in kwargs["count"]) #TODO: parallelize this
             return list(chain.from_iterable(state_dicts))
-        state.synth = self.train_adapter.generate_data(
-            model=state.model,
+        state_dict.synth = self.train_adapter.generate_data(
+            model=state_dict.model,
             **kwargs,
         )
         if self.output_format is not None:
-            state.synth = self.ensure_output_format(state.synth)
-        return [state]
+            state_dict.synth = self.ensure_output_format(state_dict.synth)
+        return [state_dict]

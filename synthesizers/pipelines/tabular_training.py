@@ -9,7 +9,7 @@ class TabularTrainingPipeline(Pipeline):
 
     def _call(
         self,
-        state: StateDict,
+        state_dict: StateDict,
         plugin: Optional[Union[str, List[str]]] = None,
     ) -> List[StateDict]:
         kwargs = dict(self.kwargs)
@@ -17,10 +17,10 @@ class TabularTrainingPipeline(Pipeline):
         if plugin is not None:
             kwargs["plugin"] = plugin
         if "plugin" in kwargs and isinstance(kwargs["plugin"], Iterable) and not isinstance(kwargs["plugin"], str):
-            state_dicts = (self._call(state.clone(), plugin=p) for p in kwargs["plugin"]) #TODO: parallelize this
+            state_dicts = (self._call(state_dict.clone(), plugin=p) for p in kwargs["plugin"]) #TODO: parallelize this
             return list(chain.from_iterable(state_dicts))
-        state.model = self.train_adapter.train_model(
-            data=state.train,
+        state_dict.model = self.train_adapter.train_model(
+            data=state_dict.train,
             **kwargs,
         )
-        return [state]
+        return [state_dict]
