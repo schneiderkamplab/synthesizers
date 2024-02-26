@@ -23,7 +23,7 @@ class TabularGenerationPipeline(Pipeline):
             kwargs["count"] = count
         if self.train_adapter is None:
             self.train_adapter = eval(MODEL_TO_ADAPTER[state.model.__class__])()
-        if isinstance(kwargs["count"], Iterable):
+        if isinstance(kwargs["count"], Iterable) and not isinstance(kwargs["count"], str):
             state_dicts = (self._call(state.clone(), count=c) for c in kwargs["count"]) #TODO: parallelize this
             return list(chain.from_iterable(state_dicts))
         state.synth = self.train_adapter.generate_data(

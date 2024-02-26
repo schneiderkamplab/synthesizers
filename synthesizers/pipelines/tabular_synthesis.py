@@ -23,7 +23,7 @@ class TabularSynthesisPipeline(Pipeline):
                 gen_args["count"] = 1 if state.train is None else len(state.train)
         else:
             gen_args["count"] = gen_count
-        if isinstance(gen_args["count"], Iterable):
+        if isinstance(gen_args["count"], Iterable) and not isinstance(gen_args["count"], str):
             state_dicts = (self._call(state.clone(), gen_count=c) for c in gen_args["count"]) #TODO: parallelize this
             return list(chain.from_iterable(state_dicts))
         split_args = dict(self.split_args)
@@ -33,13 +33,13 @@ class TabularSynthesisPipeline(Pipeline):
                     split_args["size"] = 0.8
         else:
             split_args["size"] = split_size
-        if "size" in split_args and isinstance(split_args["size"], Iterable):
+        if "size" in split_args and isinstance(split_args["size"], Iterable) and not isinstance(split_args["size"], str):
             state_dicts = (self._call(state.clone(), split_size=s) for s in split_args["size"]) #TODO: parallelize this
             return list(chain.from_iterable(state_dicts))
         train_args = dict(self.train_args)
         if train_plugin is not None:
             train_args["plugin"] = train_plugin
-        if "plugin" in train_args and isinstance(train_args["plugin"], Iterable):
+        if "plugin" in train_args and isinstance(train_args["plugin"], Iterable) and not isinstance(train_args["plugin"], str):
             state_dicts = (self._call(state.clone(), plugin=p) for p in train_args["plugin"]) #TODO: parallelize this
             return list(chain.from_iterable(state_dicts))
         if split_args.get("size", None) is not None:

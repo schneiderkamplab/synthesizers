@@ -21,7 +21,7 @@ class TabularSplitPipeline(Pipeline):
                 kwargs["size"] = 0.8
         else:
             kwargs["size"] = size
-        if isinstance(kwargs["size"], Iterable):
+        if isinstance(kwargs["size"], Iterable) and not isinstance(kwargs["size"], str):
             state_dicts = (self._call(state.clone(), size=s) for s in kwargs["size"]) #TODO: parallelize this
             return list(chain.from_iterable(state_dicts))
         kwargs["train_size"] = kwargs["size"]
