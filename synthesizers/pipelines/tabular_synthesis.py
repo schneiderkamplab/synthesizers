@@ -22,7 +22,7 @@ class TabularSynthesisPipeline(Pipeline):
             gen_args["count"] = gen_count
         split_args = dict(self.split_args)
         if split_size is None:
-            if split_args.get("train_size", None) is None:
+            if split_args.get("size", None) is None:
                 if state_dict.test is None:
                     split_args["size"] = 0.8
         else:

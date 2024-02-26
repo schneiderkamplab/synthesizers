@@ -112,7 +112,6 @@ The plugins depend on the backend used. The standard backend for generation is [
 For evaluation, the standard backend is [SynthEval](https://github.com/schneiderkamplab/syntheval).
 
 ## TODOs for 1.1
-* implement synthesize as real meta pipeline, i.e., without redoing train for multiple generations
 * implement overwrite parameter to State with Load(overwrite=...), three values:
   - copy: add new state if a value would be overwritten
   - overwrite: just overwrite the value

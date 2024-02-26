@@ -217,7 +217,7 @@ class State():
         return pipeline("synthesize", **kwargs)(self)
     def Split(self, **kwargs):
         from ..pipelines import pipeline
-        return pipeline("synthesize", **kwargs)(self)
+        return pipeline("split", **kwargs)(self)
     def Evaluate(self, **kwargs):
         from ..pipelines import pipeline
         return pipeline("evaluate", **kwargs)(self)
