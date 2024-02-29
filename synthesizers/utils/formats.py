@@ -188,6 +188,12 @@ class State():
         return repr(self.state_dicts)
     def __str__(self):
         return str(self.state_dicts)
+    def __len__(self):
+        return len(self.state_dicts)
+    def __getitem__(self, index):
+        return self.state_dicts[index]
+    def __setitem__(self, index, value):
+        self.state_dicts[index] = value
     def Save(
         self,
         name: Union[str, Path],

@@ -40,10 +40,10 @@ while True:
     print(f"WORKER: got length {length}", file=stderr)
     inp = stdin.buffer.read(length)
     print(f"WORKER: got input of length {len(inp)}", file=stderr)
-    f, args = loads(inp)
+    f, args, kwargs = loads(inp)
     print(f"WORKER: parsed input to {f} applied to {args}", file=stderr)
     with stdout_redirected(stdout, to=stderr):
-        result = f(*args)
+        result = f(*args, **kwargs)
     print(f"WORKER: result is {result}", file=stderr)
     pickled = dumps(result, protocol=4)
     print(f"WORKER: pickled result of length {len(pickled)}", file=stderr)

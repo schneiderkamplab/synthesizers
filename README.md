@@ -117,6 +117,8 @@ For evaluation, the standard backend is [SynthEval](https://github.com/schneider
   - overwrite: just overwrite the value
   - raise: raise an error if a value would be overwritten
 * parallelize the pipeline calls and multiple arguments for MultiStateDict
+* separate pypi package for subprocessing
+* add source and meta to StateDict with initial data source and parameters to reproduce
 
 ## Ideas for future development
 * implement TabularSynthesisDPPipeline
