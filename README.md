@@ -112,17 +112,16 @@ The plugins depend on the backend used. The standard backend for generation is [
 For evaluation, the standard backend is [SynthEval](https://github.com/schneiderkamplab/syntheval).
 
 ## TODOs for 1.1
-* implement overwrite parameter to State with Load(overwrite=...), three values:
-  - copy: add new state if a value would be overwritten
-  - overwrite: just overwrite the value
-  - raise: raise an error if a value would be overwritten
-* parallelize the pipeline calls and multiple arguments for MultiStateDict
-* add source and meta to StateDict with initial data source and parameters to reproduce
 * make subprocesspool.map an iterator using yield
 * test multiple datasets for Load
 * separate pypi package for subprocessing
 
 ## Ideas for future development
+* add source and meta to StateDict with initial data source and parameters to reproduce
+* implement overwrite parameter to State with Load(overwrite=...), three values:
+  - copy: add new state if a value would be overwritten
+  - overwrite: just overwrite the value
+  - raise: raise an error if a value would be overwritten
 * implement TabularSynthesisDPPipeline
 * use benchmark module from syntheval?
 * standardized list of supported metrics (supported by any backend)
