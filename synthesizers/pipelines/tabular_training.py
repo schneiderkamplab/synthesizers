@@ -1,10 +1,10 @@
 from collections.abc import Iterable
 from itertools import chain
+from subprocessing import SubprocessPool
 from typing import List, Optional, Union
 
 from .base import Pipeline
 from ..utils.formats import StateDict
-from ..utils.subprocess_pool import SubprocessPool
 
 class TabularTrainingPipeline(Pipeline):
 

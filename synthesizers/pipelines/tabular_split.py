@@ -2,11 +2,11 @@ from collections.abc import Iterable
 from itertools import chain
 from pandas import DataFrame
 from sklearn.model_selection import train_test_split
+from subprocessing import SubprocessPool
 from typing import List, Optional, Union
 
 from .base import Pipeline
 from ..utils.formats import StateDict
-from ..utils.subprocess_pool import SubprocessPool
 
 class TabularSplitPipeline(Pipeline):
 

@@ -1,12 +1,12 @@
 from collections.abc import Iterable
 from itertools import chain
+from subprocessing import SubprocessPool
 from typing import List, Optional, Union
 
 from ..adapters import *
 from .base import Pipeline
 from ..models.auto import MODEL_TO_ADAPTER
 from ..utils.formats import State, StateDict
-from ..utils.subprocess_pool import SubprocessPool
 
 class TabularGenerationPipeline(Pipeline):
 

@@ -24,6 +24,7 @@ dependencies = [
     'pandas',
     'py-synthpop',
     'pydantic<2',
+    'subprocessing',
     'synthcity',
     'syntheval',
 ]
