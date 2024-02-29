@@ -3,18 +3,17 @@ from pickle import dumps, loads
 import subprocess
 import sys
 
-def init_process(module_name, bufsize):
-    return subprocess.Popen([sys.executable, '-m', module_name, str(bufsize)], shell=False, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+def init_process(module_name):
+    return subprocess.Popen([sys.executable, '-m', module_name], shell=False, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
 
 class SubprocessPool:
 
-    def __init__(self, n_workers, module_name, bufsize=4096*4096):
+    def __init__(self, n_workers, module_name):
         self.n_workers = n_workers
         self.module_name = module_name
-        self.workers = [init_process(module_name, bufsize) for _ in range(n_workers)]
+        self.workers = [init_process(module_name) for _ in range(n_workers)]
         self.active_workers = []
         self.next_worker = 0
-        self.bufsize = bufsize
 
     def __enter__(self):
         return self
@@ -38,13 +37,7 @@ class SubprocessPool:
                 while header[-8:] != b'\x00\x00\x00\x00\x00\x00\x00\x00':
                     header.extend(worker.stdout.read(1))
                 length = int.from_bytes(worker.stdout.read(8), byteorder='big')
-                result = bytearray()
-                #print(f"MAP: got length {length}")
-                while length > len(result):
-                    to_read = min(length-len(result), self.bufsize)
-                    #print(f"MAP: reading {to_read}")
-                    result.extend(worker.stdout.read(to_read))
-                #print(f"MAP: read {len(result)} in total")
+                result = worker.stdout.read(length)
                 resultss.append(loads(result))
             worker = self.workers[self.next_worker]
             self.next_worker = (self.next_worker + 1) % self.n_workers
@@ -52,9 +45,7 @@ class SubprocessPool:
             pickled = dumps((func, args, kwargs))
             worker.stdin.write(b'\x00\x00\x00\x00\x00\x00\x00\x00')
             worker.stdin.write(len(pickled).to_bytes(8, byteorder='big'))
-            while(len(pickled) > 0):
-                written = worker.stdin.write(pickled[:self.bufsize])
-                pickled = pickled[written:]
+            worker.stdin.write(pickled)
             worker.stdin.flush()
         while self.active_workers:
             worker = self.active_workers.pop(0)
@@ -63,12 +54,6 @@ class SubprocessPool:
             while header[-8:] != b'\x00\x00\x00\x00\x00\x00\x00\x00':
                 header.extend(worker.stdout.read(1))
             length = int.from_bytes(worker.stdout.read(8), byteorder='big')
-            result = bytearray()
-            #print(f"MAP: got length {length}")
-            while length > len(result):
-                to_read = min(length-len(result), self.bufsize)
-                #print(f"MAP: reading {to_read}")
-                result.extend(worker.stdout.read(to_read))
-            #print(f"MAP: read {len(result)} in total")
+            result = worker.stdout.read(length)
             resultss.append(loads(result))
         return resultss
