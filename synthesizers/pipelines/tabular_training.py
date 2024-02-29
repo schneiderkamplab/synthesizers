@@ -1,19 +1,31 @@
+from collections.abc import Iterable
+from itertools import chain
+from typing import List, Optional, Union
+
 from .base import Pipeline
 from ..utils.formats import StateDict
+from ..utils.subprocess_pool import SubprocessPool
 
 class TabularTrainingPipeline(Pipeline):
-    def __call__(
+
+    def _call(
         self,
-        state: StateDict,
-    ):
-        state = StateDict.wrap(state)
+        state_dict: StateDict,
+        plugin: Optional[Union[str, List[str]]] = None,
+    ) -> List[StateDict]:
         kwargs = dict(self.kwargs)
         kwargs.update(self.train_args)
-        state.model = self.train_adapter.train_model(
-            data=state.train,
+        if plugin is not None:
+            kwargs["plugin"] = plugin
+        if "plugin" in kwargs and isinstance(kwargs["plugin"], Iterable) and not isinstance(kwargs["plugin"], str):
+            if self.jobs is None:
+                state_dicts = (self._call(state_dict.clone(), plugin=p) for p in kwargs["plugin"])
+            else:
+                with SubprocessPool(n_workers=self.jobs, module_name="synthesizers") as pool:
+                    state_dicts = pool.map(self._call, [(state_dict.clone(),) for _ in kwargs["plugin"]], ({"plugin": p} for p in kwargs["plugin"]))
+            return list(chain.from_iterable(state_dicts))
+        state_dict.model = self.train_adapter.train_model(
+            data=state_dict.train,
             **kwargs,
         )
-        if self.save_args.get("name", None) is not None:
-            state.Save(**self.save_args)
-        return state
-
+        return [state_dict]

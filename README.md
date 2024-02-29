@@ -42,6 +42,8 @@ pip install synthesizers
 
 ## Usage
 
+### Functional abstraction
+
 The functional abstraction manipulates states that can be initalized by the pre-defined `Load` object and manipulated by functions such as the meta function `Synthesize`:
 ```python
 from synthesizers import Load
@@ -71,6 +73,21 @@ The saved state can be loaded and resumed as one might expect:
 from synthesizers import Load
 Load("breast_state").Generate(count=10000).Save(name="breast.csv", key="synth")
 ```
+The `count` parameter can be a list or another iterable sequence, indicating that multiple synthetic sets be created. The following code will save two synthetic datasets to `breast_1000.csv` and `breast_100000.csv`:
+```python
+from synthesizers import Load
+Load("breast_state").Generate(count=[1000,100000]).Save(name="breast_1000.csv", index=0, key="synth").Save(name="breast_100000.csv", index=1, key="synth")
+```
+Multiple parameters are also allowed for the `plugin` parameter of `Train` and the `size` parameter of `Split`.
+
+Furthermore, the `Load` function takes either a single dataset or a tuple of such datasets. With the help of the optional `jobs` parameter (with variants `train_jobs`, `eval_jobs` etc.) parameter, the number of concurrent processes can be set. In the following example, we generate synthetic versions of two different splits of two different datasets:
+```
+from synthesizers import Load
+Load(("mstz/titanic","mstz/breast")).Synthesize(split_size=[0.5,0.8], train_jobs=4, do_eval=False).Save("mstz")
+```
+
+
+### Pipeline abstraction
 
 Internally, the functional abstraction instantiates pipelines to accomplish its functionality. These pipelines can be used as an expressive alternative. Here is a usage example with the synthesis meta pipeline, which again loads the breast cancer dataset from the Huggingface Hub, trains a GAN model, synthesizes 10,000 synthetic records, evaluates it, and saves it as a JSON file:
 ```python
@@ -102,6 +119,14 @@ The plugins depend on the backend used. The standard backend for generation is [
 For evaluation, the standard backend is [SynthEval](https://github.com/schneiderkamplab/syntheval).
 
 ## Ideas for future development
+* separate pypi package for subprocessing
+* add source and meta to StateDict with initial data source and parameters to reproduce
+* revamp loading saving to a more useful format, e.g., pickle everything to one file instead of directories
+* implement overwrite parameter to State with Load(overwrite=...), three values:
+  - copy: add new state if a value would be overwritten
+  - overwrite: just overwrite the value
+  - raise: raise an error if a value would be overwritten
+* implement TabularSynthesisDPPipeline
 * use benchmark module from syntheval?
 * standardized list of supported metrics (supported by any backend)
 * standardized list of supported generation methods (supported by any backend)

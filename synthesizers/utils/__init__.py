@@ -1,1 +1,1 @@
-from .formats import StateDict, ensure_format, loader, saver
+from .formats import State, StateDict, ensure_format, loader, saver

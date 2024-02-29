@@ -1,22 +1,20 @@
+from typing import List
+
 from .base import Pipeline
 from ..utils.formats import StateDict
 
 class TabularEvaluationPipeline(Pipeline):
-    def __call__(
+
+    def _call(
         self,
-        state: StateDict,
-    ):
-        print(type(state))
-        print(type(state))
-        state = StateDict.wrap(state)
+        state_dict: StateDict,
+    ) -> List[StateDict]:
         kwargs = dict(self.kwargs)
         kwargs.update(self.eval_args)
-        state.eval = self.eval_adapter.evaluate_generated(
-            original_data=state.train,
-            generated_data=state.synth,
-            hold_out=state.test,
+        state_dict.eval = self.eval_adapter.evaluate_generated(
+            original_data=state_dict.train,
+            generated_data=state_dict.synth,
+            hold_out=state_dict.test,
             **kwargs,
         )
-        if self.save_args.get("name", None) is not None:
-            state.Save(**self.save_args)
-        return state
+        return [state_dict]

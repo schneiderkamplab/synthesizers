@@ -1,9 +1,11 @@
-from typing import Any, Dict, List, Optional, Tuple, Type, Union
+from itertools import chain
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from ..adapters import NAME_TO_ADAPTER
 from ..adapters.base import Adapter
-from ..utils import ensure_format
+from ..utils import ensure_format, State
 from ..utils import logging
+from ..utils.subprocess_pool import SubprocessPool
 
 logger = logging.get_logger(__name__)
 
@@ -37,19 +39,22 @@ class PipelineRegistry:
         )
 
 class Pipeline():
-    def __init__(self,
-            task: str,
-            train_adapter: Optional[Union[Adapter, str]] = None,
-            eval_adapter: Optional[Union[Adapter, str]] = None,
-            output_format: Optional[Type] = None,
-            train_args: Optional[dict] = None,
-            gen_args: Optional[dict] = None,
-            eval_args: Optional[dict] = None,
-            split_args: Optional[dict] = None,
-            save_args: Optional[dict] = None,
-            **kwargs,
-        ):
+    def __init__(
+        self,
+        task: str,
+        jobs: Optional[int] = None,
+        train_adapter: Optional[Union[Adapter, str]] = None,
+        eval_adapter: Optional[Union[Adapter, str]] = None,
+        output_format: Optional[Any] = None,
+        train_args: Optional[dict] = None,
+        gen_args: Optional[dict] = None,
+        eval_args: Optional[dict] = None,
+        split_args: Optional[dict] = None,
+        save_args: Optional[dict] = None,
+        **kwargs,
+    ) -> None:
         self.task = task
+        self.jobs = jobs
         if isinstance(train_adapter, str):
             train_adapter = NAME_TO_ADAPTER[train_adapter]()
         self.train_adapter = train_adapter
@@ -63,5 +68,28 @@ class Pipeline():
         self.split_args = split_args
         self.save_args = save_args
         self.kwargs = kwargs
-    def ensure_output_format(self, data, output_format=None, **kwargs):
+
+    def __call__(
+        self,
+        state: State,
+        *args,
+        **kwargs,
+    ) -> State:
+        state = State.wrap(state)
+        if self.jobs is None:
+            states = (self._call(state_dict, *args, **kwargs) for state_dict in state.state_dicts)
+        else:
+            with SubprocessPool(n_workers=self.jobs, module_name="synthesizers") as pool:
+                states = pool.map(self._call, [(state_dict,)+args for state_dict in state.state_dicts], kwargss=[kwargs for _ in state.state_dicts])
+        new_state = State(state_dicts=list(chain.from_iterable(states)))
+        if self.save_args.get("name", None) is not None:
+            new_state.Save(**self.save_args)
+        return new_state
+
+    def ensure_output_format(
+        self,
+        data: Any,
+        output_format: Any = None,
+        **kwargs,
+    ) -> Any:
         return ensure_format(data, (self.output_format if output_format is None else output_format,), **kwargs)
