@@ -5,6 +5,7 @@ from ..adapters import NAME_TO_ADAPTER
 from ..adapters.base import Adapter
 from ..utils import ensure_format, State
 from ..utils import logging
+from ..utils.subprocess_pool import SubprocessPool
 
 logger = logging.get_logger(__name__)
 
@@ -41,6 +42,7 @@ class Pipeline():
     def __init__(
         self,
         task: str,
+        jobs: Optional[int] = None,
         train_adapter: Optional[Union[Adapter, str]] = None,
         eval_adapter: Optional[Union[Adapter, str]] = None,
         output_format: Optional[Any] = None,
@@ -52,6 +54,7 @@ class Pipeline():
         **kwargs,
     ) -> None:
         self.task = task
+        self.jobs = jobs
         if isinstance(train_adapter, str):
             train_adapter = NAME_TO_ADAPTER[train_adapter]()
         self.train_adapter = train_adapter
@@ -71,7 +74,11 @@ class Pipeline():
         state: State,
     ) -> State:
         state = State.wrap(state)
-        states = (self._call(state_dict) for state_dict in state.state_dicts) #TODO: parallelize this
+        if self.jobs is None:
+            states = (self._call(state_dict) for state_dict in state.state_dicts)
+        else:
+            with SubprocessPool(n_workers=self.jobs, module_name="synthesizers") as pool:
+                states = pool.map(self._call, [(state_dict,) for state_dict in state.state_dicts])
         new_state = State(state_dicts=list(chain.from_iterable(states)))
         if self.save_args.get("name", None) is not None:
             new_state.Save(**self.save_args)

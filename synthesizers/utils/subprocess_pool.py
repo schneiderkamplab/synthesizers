@@ -1,3 +1,4 @@
+from itertools import zip_longest
 from pickle import dumps, loads
 import subprocess
 import sys
@@ -15,17 +16,21 @@ class SubprocessPool:
         self.next_worker = 0
         self.bufsize = bufsize
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        del self
+
     def __del__(self):
         for worker in self.workers:
             worker.stdin.close()
             worker.stdout.close()
             worker.terminate()
 
-    def map(self, func, argss, kwargss=None):
-        if kwargss is None:
-            kwargss = [{} for _ in argss]
+    def map(self, func, argss, kwargss=[]):
         resultss = []
-        for args, kwargs in zip(argss, kwargss):
+        for args, kwargs in zip_longest(argss, kwargss, fillvalue={}):
             if len(self.active_workers) == self.n_workers:
                 worker = self.active_workers.pop(0)
                 header = bytearray()
@@ -34,12 +39,12 @@ class SubprocessPool:
                     header.extend(worker.stdout.read(1))
                 length = int.from_bytes(worker.stdout.read(8), byteorder='big')
                 result = bytearray()
-                print(f"MAP: got length {length}")
+                #print(f"MAP: got length {length}")
                 while length > len(result):
                     to_read = min(length-len(result), self.bufsize)
-                    print(f"MAP: reading {to_read}")
+                    #print(f"MAP: reading {to_read}")
                     result.extend(worker.stdout.read(to_read))
-                print(f"MAP: read {len(result)} in total")
+                #print(f"MAP: read {len(result)} in total")
                 resultss.append(loads(result))
             worker = self.workers[self.next_worker]
             self.next_worker = (self.next_worker + 1) % self.n_workers
@@ -59,11 +64,11 @@ class SubprocessPool:
                 header.extend(worker.stdout.read(1))
             length = int.from_bytes(worker.stdout.read(8), byteorder='big')
             result = bytearray()
-            print(f"MAP: got length {length}")
+            #print(f"MAP: got length {length}")
             while length > len(result):
                 to_read = min(length-len(result), self.bufsize)
-                print(f"MAP: reading {to_read}")
+                #print(f"MAP: reading {to_read}")
                 result.extend(worker.stdout.read(to_read))
-            print(f"MAP: read {len(result)} in total")
+            #print(f"MAP: read {len(result)} in total")
             resultss.append(loads(result))
         return resultss

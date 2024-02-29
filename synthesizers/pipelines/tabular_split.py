@@ -5,7 +5,8 @@ from sklearn.model_selection import train_test_split
 from typing import List, Optional, Union
 
 from .base import Pipeline
-from ..utils.formats import State, StateDict
+from ..utils.formats import StateDict
+from ..utils.subprocess_pool import SubprocessPool
 
 class TabularSplitPipeline(Pipeline):
 
@@ -22,7 +23,11 @@ class TabularSplitPipeline(Pipeline):
         else:
             kwargs["size"] = size
         if isinstance(kwargs["size"], Iterable) and not isinstance(kwargs["size"], str):
-            state_dicts = (self._call(state_dict.clone(), size=s) for s in kwargs["size"]) #TODO: parallelize this
+            if self.jobs is None:
+                state_dicts = (self._call(state_dict.clone(), size=s) for s in kwargs["size"])
+            else:
+                with SubprocessPool(n_workers=self.jobs, module_name="synthesizers") as pool:
+                    state_dicts = pool.map(self._call, [(state_dict.clone(),) for _ in kwargs["size"]], ({"size": s} for s in kwargs["size"]))
             return list(chain.from_iterable(state_dicts))
         kwargs["train_size"] = kwargs["size"]
         del kwargs["size"]
