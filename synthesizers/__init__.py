@@ -4,7 +4,7 @@ from .adapters import (
     SynthPopAdapter,
 )
 from .utils import (
-    StateDict,
+    State,
     ensure_format,
     loader,
     saver,

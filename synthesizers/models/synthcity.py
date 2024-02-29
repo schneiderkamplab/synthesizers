@@ -10,6 +10,10 @@ class SynthCityModel(Model):
     def __init__(self, model):
         super(SynthCityModel, self).__init__(saveable=True)
         self.model = model
+    def __getstate__(self):
+        return self.model.save()
+    def __setstate__(self, state):
+        self.model = Plugins().load(state)
     def save_pretrained(self, name):
         path = Path(name)
         path.mkdir(parents=True, exist_ok=True)
