@@ -5,7 +5,7 @@ import synthcity.plugins
 from synthesizers import pipeline
 from synthesizers.models import AutoModel
 from synthesizers.adapters import SynthPopAdapter
-from synthesizers.utils.formats import ensure_format, SUPPORTED_FORMATS, StateDict
+from synthesizers.utils.formats import ensure_format, SUPPORTED_FORMATS, State, StateDict
 
 def lim_print(data, limit=800):
     res = repr(data).replace("\n","")
@@ -32,51 +32,51 @@ print("TESTING TRAINING")
 p = pipeline("train")
 model = p(in_data)
 lim_print(model)
-model.model.save_pretrained("test/synthcity_model")
+model[0].model.save_pretrained("test/synthcity_model")
 p = pipeline("train", train_adapter="synthpop")
 model = p(in_data)
 lim_print(model)
-model.model.save_pretrained("test/synthpop_model")
+model[0].model.save_pretrained("test/synthpop_model")
 
 print("TESTING GENERATION")
 model = AutoModel.from_pretrained("test/synthcity_model")
 state = StateDict(model=model)
-p = pipeline("generate")
+p = pipeline("generate", jobs=1)
 out_data = p(state, count=100)
 lim_print(out_data)
 model = AutoModel.from_pretrained("test/synthpop_model")
 state = StateDict(model=model)
 p = pipeline("generate")
-out_data = p(state, count=100)
+out_data = p(state, count=100)[0].synth
 lim_print(out_data)
 
 print("TESTING SYNTHEVAL")
 p = pipeline("evaluate", eval_adapter="syntheval", target_col="is_cancer")
-state = StateDict(train=in_data, synth=out_data.synth)
-result = p(state)
+state = StateDict(train=in_data, synth=out_data)
+result = p(state)[0].eval
 lim_print(result)
 p = pipeline("evaluate", eval_adapter="syntheval")
-result = p(state)
+result = p(state)[0].eval
 lim_print(result)
 p = pipeline("evaluate", eval_adapter="syntheval", config="fast_eval")
-result = p(state)
+result = p(state)[0].eval
 lim_print(result)
 p = pipeline("evaluate", eval_adapter="syntheval", target_col="is_cancer")
-result = p(state)
+result = p(state)[0].eval
 lim_print(result)
 
 print("TESTING SYNTHESIS")
 p = pipeline("synthesize")
-out_data = p(in_data)
+out_data = p(in_data)[0].synth
 lim_print(out_data)
 p = pipeline("synthesize", train_adapter=SynthPopAdapter())
-out_data = p(in_data)
+out_data = p(in_data)[0].synth
 lim_print(out_data)
 
 print("TESTING EVALUATION")
 print("default", end=": ")
 p = pipeline("evaluate")
-state = StateDict(train=in_data, synth=out_data.synth)
+state = StateDict(train=in_data, synth=out_data)
 result = p(state)
 lim_print(result)
 for value in synthcity.metrics.eval_statistical.__dict__.values():

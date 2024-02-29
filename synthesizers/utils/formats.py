@@ -158,7 +158,7 @@ class StateDict():
         kwargs = {}
         for key in STATE_DICT_FIELDS:
             if (path / f"{key}.pickle").is_file():
-                kwargs[key] = loader(path / f"{key}.pickle")
+                kwargs[key] = loader(path / f"{key}.pickle").train
         try:
             kwargs["model"] = AutoModel.from_pretrained(name)
         except:
@@ -176,8 +176,14 @@ class State():
     def wrap(data: Any):
         if isinstance(data, State):
             return data.clone()
-        if isinstance(data, Iterable) and not isinstance(data, list) and not isinstance(data, str):
+        if isinstance(data, tuple):
             state_dicts = [StateDict.wrap(d) for d in data]
+        elif (isinstance(data, str) or isinstance(data, PathLike)) and isdir(data) and isdir(Path(data) / "0"):
+            i = 0
+            state_dicts = []
+            while isdir(Path(data) / str(i)):
+                state_dicts.append(StateDict.load(Path(data) / str(i)))
+                i += 1
         else:
             state_dicts = [StateDict.wrap(data)]
         return State(state_dicts=state_dicts)
@@ -216,7 +222,7 @@ class State():
                 state_dict.save(f'{file_name}_{i}.{file_ext}', output_format=output_format, key=key)
         else:
             for i, state_dict in enumerate(self.state_dicts):
-                state_dict.save(f'{name}_{i}', output_format=output_format)
+                state_dict.save(f'{name}/{i}', output_format=output_format)
         return self
     def Synthesize(self, **kwargs):
         from ..pipelines import pipeline

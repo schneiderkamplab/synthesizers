@@ -28,7 +28,6 @@ class SubprocessPool:
             worker.terminate()
 
     def map(self, func, argss, kwargss=[]):
-        resultss = []
         for args, kwargs in zip_longest(argss, kwargss, fillvalue={}):
             if len(self.active_workers) == self.n_workers:
                 worker = self.active_workers.pop(0)
@@ -38,7 +37,7 @@ class SubprocessPool:
                     header.extend(worker.stdout.read(1))
                 length = int.from_bytes(worker.stdout.read(8), byteorder='big')
                 result = worker.stdout.read(length)
-                resultss.append(loads(result))
+                yield loads(result)
             worker = self.workers[self.next_worker]
             self.next_worker = (self.next_worker + 1) % self.n_workers
             self.active_workers.append(worker)
@@ -55,5 +54,4 @@ class SubprocessPool:
                 header.extend(worker.stdout.read(1))
             length = int.from_bytes(worker.stdout.read(8), byteorder='big')
             result = worker.stdout.read(length)
-            resultss.append(loads(result))
-        return resultss
+            yield loads(result)

@@ -72,13 +72,15 @@ class Pipeline():
     def __call__(
         self,
         state: State,
+        *args,
+        **kwargs,
     ) -> State:
         state = State.wrap(state)
         if self.jobs is None:
-            states = (self._call(state_dict) for state_dict in state.state_dicts)
+            states = (self._call(state_dict, *args, **kwargs) for state_dict in state.state_dicts)
         else:
             with SubprocessPool(n_workers=self.jobs, module_name="synthesizers") as pool:
-                states = pool.map(self._call, [(state_dict,) for state_dict in state.state_dicts])
+                states = pool.map(self._call, [(state_dict,)+args for state_dict in state.state_dicts], kwargss=[kwargs for _ in state.state_dicts])
         new_state = State(state_dicts=list(chain.from_iterable(states)))
         if self.save_args.get("name", None) is not None:
             new_state.Save(**self.save_args)
