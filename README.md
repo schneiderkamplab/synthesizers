@@ -80,6 +80,13 @@ Load("breast_state").Generate(count=[1000,100000]).Save(name="breast_1000.csv", 
 ```
 Multiple parameters are also allowed for the `plugin` parameter of `Train` and the `size` parameter of `Split`.
 
+Furthermore, the `Load` function takes either a single dataset or a tuple of such datasets. With the help of the optional `jobs` parameter (with variants `train_jobs`, `eval_jobs` etc.) parameter, the number of concurrent processes can be set. In the following example, we generate synthetic versions of two different splits of two different datasets:
+```
+from synthesizers import Load
+Load(("mstz/titanic","mstz/breast")).Synthesize(split_size=[0.5,0.8], train_jobs=4, do_eval=False).Save("mstz")
+```
+
+
 ### Pipeline abstraction
 
 Internally, the functional abstraction instantiates pipelines to accomplish its functionality. These pipelines can be used as an expressive alternative. Here is a usage example with the synthesis meta pipeline, which again loads the breast cancer dataset from the Huggingface Hub, trains a GAN model, synthesizes 10,000 synthetic records, evaluates it, and saves it as a JSON file:
@@ -111,14 +118,14 @@ train(s2).Generate(count=1000).Save(name="titanic.jsonl", key="synth")
 The plugins depend on the backend used. The standard backend for generation is [synthcity](https://github.com/vanderschaarlab/synthcity), which offers a variety of plugins including `adsgan`, `ctgan`, `tvae`, and `bayesian_network`.
 For evaluation, the standard backend is [SynthEval](https://github.com/schneiderkamplab/syntheval).
 
-## TODOs for 1.1
+## Ideas for future development
+* separate pypi package for subprocessing
+* add source and meta to StateDict with initial data source and parameters to reproduce
+* revamp loading saving to a more useful format, e.g., pickle everything to one file instead of directories
 * implement overwrite parameter to State with Load(overwrite=...), three values:
   - copy: add new state if a value would be overwritten
   - overwrite: just overwrite the value
   - raise: raise an error if a value would be overwritten
-* parallelize the pipeline calls and multiple arguments for MultiStateDict
-
-## Ideas for future development
 * implement TabularSynthesisDPPipeline
 * use benchmark module from syntheval?
 * standardized list of supported metrics (supported by any backend)

@@ -97,6 +97,7 @@ def check_task(task: str) -> Tuple[str, Dict, Any]:
 
 def pipeline(
     task: str = None,
+    jobs: Optional[int] = None,
     train_adapter: Optional[Union[Adapter, str]] = None,
     eval_adapter: Optional[Union[Adapter, str]] = None,
     pipeline_class: Optional[Type] = None,
@@ -117,6 +118,7 @@ def pipeline(
     kwargs = {k: v for k, v in kwargs.items() if k.split("_")[0] not in ("train", "gen", "eval")}
     return pipeline_class(
         task=task,
+        jobs=jobs,
         train_adapter=train_adapter,
         eval_adapter=eval_adapter,
         train_args=train_args,

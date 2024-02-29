@@ -6,6 +6,7 @@ from ..adapters import *
 from .base import Pipeline
 from ..models.auto import MODEL_TO_ADAPTER
 from ..utils.formats import State, StateDict
+from ..utils.subprocess_pool import SubprocessPool
 
 class TabularGenerationPipeline(Pipeline):
 
@@ -24,7 +25,11 @@ class TabularGenerationPipeline(Pipeline):
         if self.train_adapter is None:
             self.train_adapter = eval(MODEL_TO_ADAPTER[state_dict.model.__class__])()
         if isinstance(kwargs["count"], Iterable) and not isinstance(kwargs["count"], str):
-            state_dicts = (self._call(state_dict.clone(), count=c) for c in kwargs["count"]) #TODO: parallelize this
+            if self.jobs is None:
+                state_dicts = (self._call(state_dict.clone(), count=c) for c in kwargs["count"])
+            else:
+                with SubprocessPool(n_workers=self.jobs, module_name="synthesizers") as pool:
+                    state_dicts = pool.map(self._call, [(state_dict.clone(),) for _ in kwargs["count"]], ({"count": c} for c in kwargs["count"]))
             return list(chain.from_iterable(state_dicts))
         state_dict.synth = self.train_adapter.generate_data(
             model=state_dict.model,
