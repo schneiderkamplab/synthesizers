@@ -1,11 +1,11 @@
 from itertools import chain
+from subprocessing import SubprocessPool
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from ..adapters import NAME_TO_ADAPTER
 from ..adapters.base import Adapter
 from ..utils import ensure_format, State
 from ..utils import logging
-from ..utils.subprocess_pool import SubprocessPool
 
 logger = logging.get_logger(__name__)
 
