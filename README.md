@@ -119,7 +119,6 @@ The plugins depend on the backend used. The standard backend for generation is [
 For evaluation, the standard backend is [SynthEval](https://github.com/schneiderkamplab/syntheval).
 
 ## Ideas for future development
-* separate pypi package for subprocessing
 * add source and meta to StateDict with initial data source and parameters to reproduce
 * revamp loading saving to a more useful format, e.g., pickle everything to one file instead of directories
 * implement overwrite parameter to State with Load(overwrite=...), three values:
