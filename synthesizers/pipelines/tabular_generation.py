@@ -1,6 +1,6 @@
 from collections.abc import Iterable
 from itertools import chain
-from subprocessing import SubprocessPool
+from subprocessing import Pool
 from typing import List, Optional, Union
 
 from ..adapters import *
@@ -28,7 +28,7 @@ class TabularGenerationPipeline(Pipeline):
             if self.jobs is None:
                 state_dicts = (self._call(state_dict.clone(), count=c) for c in kwargs["count"])
             else:
-                with SubprocessPool(n_workers=self.jobs, module_name="synthesizers") as pool:
+                with Pool(processes=self.jobs) as pool:
                     state_dicts = pool.map(self._call, [(state_dict.clone(),) for _ in kwargs["count"]], ({"count": c} for c in kwargs["count"]))
             return list(chain.from_iterable(state_dicts))
         state_dict.synth = self.train_adapter.generate_data(

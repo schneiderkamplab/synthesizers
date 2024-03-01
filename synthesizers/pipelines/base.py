@@ -1,5 +1,5 @@
 from itertools import chain
-from subprocessing import SubprocessPool
+from subprocessing import Pool
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from ..adapters import NAME_TO_ADAPTER
@@ -79,7 +79,7 @@ class Pipeline():
         if self.jobs is None:
             states = (self._call(state_dict, *args, **kwargs) for state_dict in state.state_dicts)
         else:
-            with SubprocessPool(n_workers=self.jobs, module_name="synthesizers") as pool:
+            with Pool(processes=self.jobs) as pool:
                 states = pool.map(self._call, [(state_dict,)+args for state_dict in state.state_dicts], kwargss=[kwargs for _ in state.state_dicts])
         new_state = State(state_dicts=list(chain.from_iterable(states)))
         if self.save_args.get("name", None) is not None:

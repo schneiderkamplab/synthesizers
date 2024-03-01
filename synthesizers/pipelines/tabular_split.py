@@ -2,7 +2,7 @@ from collections.abc import Iterable
 from itertools import chain
 from pandas import DataFrame
 from sklearn.model_selection import train_test_split
-from subprocessing import SubprocessPool
+from subprocessing import Pool
 from typing import List, Optional, Union
 
 from .base import Pipeline
@@ -26,7 +26,7 @@ class TabularSplitPipeline(Pipeline):
             if self.jobs is None:
                 state_dicts = (self._call(state_dict.clone(), size=s) for s in kwargs["size"])
             else:
-                with SubprocessPool(n_workers=self.jobs, module_name="synthesizers") as pool:
+                with Pool(processes=self.jobs) as pool:
                     state_dicts = pool.map(self._call, [(state_dict.clone(),) for _ in kwargs["size"]], ({"size": s} for s in kwargs["size"]))
             return list(chain.from_iterable(state_dicts))
         kwargs["train_size"] = kwargs["size"]

@@ -1,6 +1,6 @@
 from collections.abc import Iterable
 from itertools import chain
-from subprocessing import SubprocessPool
+from subprocessing import Pool
 from typing import List, Optional, Union
 
 from .base import Pipeline
@@ -21,7 +21,7 @@ class TabularTrainingPipeline(Pipeline):
             if self.jobs is None:
                 state_dicts = (self._call(state_dict.clone(), plugin=p) for p in kwargs["plugin"])
             else:
-                with SubprocessPool(n_workers=self.jobs, module_name="synthesizers") as pool:
+                with Pool(processes=self.jobs) as pool:
                     state_dicts = pool.map(self._call, [(state_dict.clone(),) for _ in kwargs["plugin"]], ({"plugin": p} for p in kwargs["plugin"]))
             return list(chain.from_iterable(state_dicts))
         state_dict.model = self.train_adapter.train_model(
