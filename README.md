@@ -138,3 +138,5 @@ For evaluation, the standard backend is [SynthEval](https://github.com/schneider
 * push_to_hub method on datasets
 * R synthpop as backend
 * integration of other backends
+* Put string options as literals so they are more visible in tooltips
+* Docstrings for all modules used in the examples
