@@ -8,3 +8,5 @@ dist
 workspace
 test
 requirements.txt
+venv/
+.python-version
