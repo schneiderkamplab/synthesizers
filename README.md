@@ -81,7 +81,7 @@ Load("breast_state").Generate(count=[1000,100000]).Save(name="breast_1000.csv", 
 Multiple parameters are also allowed for the `plugin` parameter of `Train` and the `size` parameter of `Split`.
 
 Furthermore, the `Load` function takes either a single dataset or a tuple of such datasets. With the help of the optional `jobs` parameter (with variants `train_jobs`, `eval_jobs` etc.) parameter, the number of concurrent processes can be set. In the following example, we generate synthetic versions of two different splits of two different datasets:
-```
+```python
 from synthesizers import Load
 Load(("mstz/titanic","mstz/breast")).Synthesize(split_size=[0.5,0.8], train_jobs=4, do_eval=False).Save("mstz")
 ```
