@@ -119,6 +119,10 @@ The plugins depend on the backend used. The standard backend for generation is [
 For evaluation, the standard backend is [SynthEval](https://github.com/schneiderkamplab/syntheval).
 
 ## Ideas for future development
+* add possibility to allow methods from multiple backenders by allowing multiple adapters (mapping method name to adapter)
+* rename train_adapter and eval_adapter to avoid clash with train_* and eval_* argument spaces
+* make sure all parameters can be iterables/sequences where it makes sense (e.g. target_col)
+* check argument validity before running pipeline
 * improved error handling (e.g. evaluating without synth dataset, training without train dataset etc.)
 * add source and meta to StateDict with initial data source and parameters to reproduce
 * revamp loading saving to a more useful format, e.g., pickle everything to one file instead of directories
