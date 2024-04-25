@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Tuple, Type, Union
+from typing import Any, Dict, Optional, Tuple, Type, Union, Literal
 
 from ..adapters import (
     SynthCityAdapter,
@@ -96,13 +96,52 @@ def check_task(task: str) -> Tuple[str, Dict, Any]:
     return PIPELINE_REGISTRY.check_task(task)
 
 def pipeline(
-    task: str = None,
+    task: str = Literal['synthesize', 'split', 'train', 'generate', 'evaluate', 'save'],
     jobs: Optional[int] = None,
     train_adapter: Optional[Union[Adapter, str]] = None,
     eval_adapter: Optional[Union[Adapter, str]] = None,
     pipeline_class: Optional[Type] = None,
     **kwargs,
 ):
+    """ 
+    Returns a pipeline object for the given task.
+
+    Args:
+        task (`str`):
+            The task defining which pipeline will be returned. Currently accepted tasks are:
+
+            - `"synthesize"`    : run split, train, generate, evaluate, and save in sequence
+            - `"split"`         : split the data into train and test sets
+            - `"train"`         : train the selected model(s)
+            - `"generate"`      : generate synthetic data from the trained model(s)
+            - `"evaluate"`      : evaluate the generated synthetic data
+            - `"save"`          : save the generated synthetic data
+
+        jobs (`int`, optional):
+            The number of parallel jobs to run. Defaults to `None`.
+
+        train_adapter (`Union[Adapter, str]`, optional):
+            The training adapter to use. Defaults to `None`.
+
+        eval_adapter (`Union[Adapter, str]`, optional):
+            The evaluation adapter to use. Defaults to `None`.
+
+        pipeline_class (`Type`, optional):
+            The pipeline class to use. Defaults to `None`.
+
+        **kwargs:
+            Additional keyword arguments to pass to the pipeline. Arguments can be passed to the corresponding 
+            methods by using the prefixes: 
+            
+            - `"train_"`
+            - `"gen_"`
+            - `"eval_"`
+            - `"split_"`
+            - `"save_"`
+    
+    Returns:
+        `Pipeline`: The pipeline object for the given task.
+    """
     normalized_task, targeted_task, task_options = check_task(task)
     if pipeline_class is None:
         pipeline_class = targeted_task["impl"]
