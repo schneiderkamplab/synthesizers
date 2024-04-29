@@ -10,3 +10,4 @@ test
 requirements.txt
 venv/
 .python-version
+local_test/
