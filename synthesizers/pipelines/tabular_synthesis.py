@@ -34,7 +34,7 @@ class TabularSynthesisPipeline(Pipeline):
         if split_args.get("size", None) is not None:
             split_pipe = pipeline("split", **split_args)
             state = split_pipe(state)
-        train_pipe = pipeline("train", **train_args)
+        train_pipe = pipeline("train", train_adapter=self.train_adapter, **train_args)
         state = train_pipe(state)
         gen_pipe = pipeline("generate", **gen_args)
         state = gen_pipe(state)
