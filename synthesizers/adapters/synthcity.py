@@ -10,9 +10,9 @@ class SynthCityAdapter(Adapter):
         super(SynthCityAdapter, self).__init__(input_formats)
         self.plugin = plugin
         self.evaluator_class = evaluator_class
-    def train_model(self, data, plugin=None):
+    def train_model(self, data, plugin=None, **kwargs):
         data = self.ensure_input_format(data)
-        model = Plugins().get(self.plugin if plugin is None else plugin)
+        model = Plugins().get(self.plugin if plugin is None else plugin, **kwargs)
         model.fit(data)
         return SynthCityModel(model)
     def generate_data(self, count, model):
