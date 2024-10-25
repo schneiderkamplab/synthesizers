@@ -2,12 +2,12 @@ from huggingface_hub import snapshot_download
 from pathlib import Path
 
 from .base import Model
-from .synthcity import SynthCityModel
-from .synthpop import SynthPopModel
+from .synthcity import SynthCityModel, MODEL_FILE as SYNTH_CITY_MODEL_FILE
+from .synthpop import SynthPopModel, MODEL_FILE as SYNTH_POP_MODEL_FILE
 
 FILE_TO_CLASS = {
-    "synthcity.pickle": SynthCityModel,
-    "synthpop.pickle": SynthPopModel,
+    SYNTH_CITY_MODEL_FILE: SynthCityModel,
+    SYNTH_POP_MODEL_FILE: SynthPopModel,
 }
 
 MODEL_TO_ADAPTER = {
