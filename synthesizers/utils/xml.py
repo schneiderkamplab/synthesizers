@@ -36,7 +36,8 @@ def wrap_model_xml(model_type, model_data):
     model_type_elem.text = model_type
     ET.SubElement(root, VERSION_TAG, id="python", number=platform.python_version())
     for PACKAGE in PACKAGES:
-        ET.SubElement(root, VERSION_TAG, id=PACKAGE, number=importlib.metadata.version(PACKAGE))
+        if PACKAGE:
+            ET.SubElement(root, VERSION_TAG, id=PACKAGE, number=importlib.metadata.version(PACKAGE))
     ET.SubElement(root, VERSION_TAG, id="", number=platform.platform())
     model_data_elem = ET.SubElement(root, PARAMETERS_TAG)
     model_data_elem.text = base64.b64encode(model_data).decode("utf-8")
