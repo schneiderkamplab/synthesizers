@@ -134,6 +134,7 @@ class StateDict():
         name: Union[str, Path],
         output_format: Any = None,
         key: str = None,
+        part_size: int = 2**30,
     ) -> None:
         assert isinstance(name, str) or isinstance(name, PathLike)
         assert output_format is None or output_format in SUPPORTED_FORMATS
@@ -147,7 +148,7 @@ class StateDict():
                 value = self.__dict__[key]
                 if value is not None:
                     if key == "model":
-                        value.save_pretrained(name)
+                        value.save_pretrained(name, part_size=part_size)
                     else:
                         saver(value, path / f"{key}.pickle", output_format=output_format)
     def load(name: Union[str, Path]):
@@ -205,24 +206,25 @@ class State():
         name: Union[str, Path],
         output_format: Any = None,
         key: str = None,
-        index: int =None,
+        index: int = None,
+        part_size: int = 2**30,
     ) -> None:
         assert isinstance(name, str) or isinstance(name, PathLike)
         assert output_format is None or output_format in SUPPORTED_FORMATS
         assert key is None or key in STATE_DICT_FIELDS
         assert index is None or (isinstance(index, int) and 0 <= index < len(self.state_dicts))
         if index is not None:
-            self.state_dicts[index].save(name, output_format=output_format, key=key)
+            self.state_dicts[index].save(name, output_format=output_format, key=key, part_size=part_size)
         elif len(self.state_dicts) == 1:
-            self.state_dicts[0].save(name, output_format=output_format, key=key)
+            self.state_dicts[0].save(name, output_format=output_format, key=key, part_size=part_size)
         elif key is not None:
             file_ext = str(name).split(".")[-1]
             file_name = str(name).split(f'.{file_ext}')[0]
             for i, state_dict in enumerate(self.state_dicts):
-                state_dict.save(f'{file_name}_{i}.{file_ext}', output_format=output_format, key=key)
+                state_dict.save(f'{file_name}_{i}.{file_ext}', output_format=output_format, key=key, part_size=part_size)
         else:
             for i, state_dict in enumerate(self.state_dicts):
-                state_dict.save(f'{name}/{i}', output_format=output_format)
+                state_dict.save(f'{name}/{i}', output_format=output_format, part_size=part_size)
         return self
     def Synthesize(self, **kwargs):
         from ..pipelines import pipeline
