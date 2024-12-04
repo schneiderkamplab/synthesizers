@@ -1,7 +1,7 @@
 # Synthesizers
 A meta library for synthetic data generation.
 
-The goal of synthesizers is to simnplify the use of existing frameworks for synthethic data generation:
+The goal of synthesizers is to simplify the use of existing frameworks for synthethic data generation:
 * All basic operations are available as functional and pipeline abstractions that transform states.
 * States keep track of datasets, models, and evaluation results.
 * A meta pipeline allows for very simple but expressive synthetic data generation.
