@@ -7,16 +7,19 @@ from ..models.synthpop import SynthPopModel
 MAP_TYPES = {
     'int64': 'int',
     'int8' : 'int',
+    'float64': 'float',
+    'float32': 'float',
     'category': 'category',
+    'object': 'category'
 }
 
 class SynthPopAdapter(Adapter):
     def __init__(self, input_formats=(DataFrame,)):
         super(SynthPopAdapter, self).__init__(input_formats)
-    def train_model(self, data, plugin=None):
+    def train_model(self, data, plugin=None, **kwargs):
         data = self.ensure_input_format(data)
         dtypes = {col:MAP_TYPES[dtype.name] for col, dtype in data.dtypes.to_dict().items()}
-        model = Synthpop()
+        model = Synthpop(**kwargs)
         model.fit(data, dtypes)
         return SynthPopModel(model)
     def generate_data(self, count, model):
