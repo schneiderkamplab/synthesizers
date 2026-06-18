@@ -27,7 +27,7 @@ dependencies = [
     'py-synthpop @ git+https://github.com/schneiderkamplab/py-synthpop.git',
     'scikit-learn>=1.7,<1.8',
     'subprocessing',
-    'synthcity @ git+https://github.com/schneiderkamplab/synthcity.git@53754bb7c0f73e52c96878ca350394dabfc03da7',
+    'synthcity @ git+https://github.com/schneiderkamplab/synthcity.git@e3e5af43b82b8aca107199de84b7f5293ed39275',
     'syntheval @ git+https://github.com/schneiderkamplab/syntheval.git@8222a118c9d7998511b7a3670288885556b6dfe6',
 ]
 
