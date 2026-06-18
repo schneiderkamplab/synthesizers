@@ -23,12 +23,12 @@ dependencies = [
     'huggingface-hub>=1,<2',
     'numpy>=2,<3',
     'openpyxl',
-    'pandas>=2.1,<3',
+    'pandas>=2.1,<4',
     'py-synthpop @ git+https://github.com/schneiderkamplab/py-synthpop.git',
-    'scikit-learn>=1.7,<1.8',
+    'scikit-learn>=1.7,<2',
     'subprocessing',
-    'synthcity @ git+https://github.com/schneiderkamplab/synthcity.git@e3e5af43b82b8aca107199de84b7f5293ed39275',
-    'syntheval @ git+https://github.com/schneiderkamplab/syntheval.git@8222a118c9d7998511b7a3670288885556b6dfe6',
+    'synthcity @ git+https://github.com/schneiderkamplab/synthcity.git@b025e60cc139d8944afc29b50398ff5e2e2d61af',
+    'syntheval @ git+https://github.com/schneiderkamplab/syntheval.git@42a3d345be517177ab575a3019622ce24a1c75d4',
 ]
 
 [project.urls]
