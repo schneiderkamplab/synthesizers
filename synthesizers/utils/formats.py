@@ -6,10 +6,12 @@ from os.path import isdir, isfile
 from pandas import DataFrame, read_excel
 from pathlib import Path
 import pickle
-from synthcity.plugins.core.dataloader import GenericDataLoader
+from synthcity.plugins.core.dataloader import GenericDataLoader, TimeSeriesDataLoader
 from typing import Any, List, Union
 
 from ..models import AutoModel, Model
+
+__all__ = ["State", "StateDict", "ensure_format", "loader", "saver"]
 
 SUPPORTED_FORMATS: Any = [
     list,
@@ -17,6 +19,7 @@ SUPPORTED_FORMATS: Any = [
     DataFrame,
     Dataset,
     GenericDataLoader,
+    TimeSeriesDataLoader,
 ]
 
 STATE_DICT_FIELDS: str = [
@@ -68,6 +71,8 @@ def ensure_format(
                 data, source_format = data.to_pandas(), DataFrame
             if source_format in (list, ndarray, DataFrame):
                 return GenericDataLoader(data, **kwargs)
+            raise ValueError(f"cannot convert {source_format} to {target_format}")
+        if target_format == TimeSeriesDataLoader:
             raise ValueError(f"cannot convert {source_format} to {target_format}")
         if target_format == list:
             if source_format == Dataset:
