@@ -43,7 +43,7 @@ class TabularSynthesisPipeline(Pipeline):
             state = eval_pipe(state)
         state_dicts = state.state_dicts
         for state_dict in state_dicts:
-            output_format = type(state_dict.train) if self.output_format is "auto" else self.output_format
+            output_format = type(state_dict.train) if self.output_format == "auto" else self.output_format
             if output_format is not None:
                 state_dict.synth = self.ensure_output_format(state_dict.synth, output_format=output_format)
         return state_dicts
