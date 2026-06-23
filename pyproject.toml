@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "synthesizers"
-version = "1.4.0"
+version = "1.4.1"
 authors = [
   { name="Peter Schneider-Kamp" }
 ]
@@ -27,7 +27,7 @@ dependencies = [
     'schneiderkamplab-py-synthpop>=0.1.2.post1,<0.2',
     'scikit-learn>=1.7,<2',
     'subprocessing',
-    'schneiderkamplab-synthcity>=0.2.13,<0.3',
+    'schneiderkamplab-synthcity>=0.2.14,<0.3',
     'syntheval>=1.7.2,<2',
 ]
 
