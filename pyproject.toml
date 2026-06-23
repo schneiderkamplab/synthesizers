@@ -24,11 +24,11 @@ dependencies = [
     'numpy>=2,<3',
     'openpyxl',
     'pandas>=2.1,<4',
-    'py-synthpop @ git+https://github.com/schneiderkamplab/py-synthpop.git',
+    'schneiderkamplab-py-synthpop>=0.1.2.post1,<0.2',
     'scikit-learn>=1.7,<2',
     'subprocessing',
-    'synthcity @ git+https://github.com/schneiderkamplab/synthcity.git@b025e60cc139d8944afc29b50398ff5e2e2d61af',
-    'syntheval @ git+https://github.com/schneiderkamplab/syntheval.git@42a3d345be517177ab575a3019622ce24a1c75d4',
+    'schneiderkamplab-synthcity>=0.2.13,<0.3',
+    'syntheval>=1.7.2,<2',
 ]
 
 [project.urls]
@@ -41,6 +41,3 @@ include = [
     'LICENSE',
     'README.md',
 ]
-
-[tool.hatch.metadata]
-allow-direct-references = true

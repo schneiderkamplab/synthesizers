@@ -1,25 +1,37 @@
 from collections.abc import Iterable
+from contextlib import contextmanager, redirect_stderr
 from datasets import Dataset, DatasetDict, load_dataset
+import io
 from numpy import ndarray, array
+import os
 from os import PathLike
 from os.path import isdir, isfile
 from pandas import DataFrame, read_excel
 from pathlib import Path
 import pickle
-from synthcity.plugins.core.dataloader import GenericDataLoader, TimeSeriesDataLoader
 from typing import Any, List, Union
 
-from ..models import AutoModel, Model
+GenericDataLoaderFormat = "synthcity.GenericDataLoader"
+TimeSeriesDataLoaderFormat = "synthcity.TimeSeriesDataLoader"
 
-__all__ = ["State", "StateDict", "ensure_format", "loader", "saver"]
+__all__ = [
+    "GenericDataLoaderFormat",
+    "State",
+    "StateDict",
+    "TimeSeriesDataLoaderFormat",
+    "ensure_format",
+    "loader",
+    "quiet_synthcity_imports",
+    "saver",
+]
 
 SUPPORTED_FORMATS: Any = [
     list,
     ndarray,
     DataFrame,
     Dataset,
-    GenericDataLoader,
-    TimeSeriesDataLoader,
+    GenericDataLoaderFormat,
+    TimeSeriesDataLoaderFormat,
 ]
 
 STATE_DICT_FIELDS: str = [
@@ -30,16 +42,49 @@ STATE_DICT_FIELDS: str = [
     "eval",
 ]
 
+@contextmanager
+def quiet_synthcity_imports():
+    os.environ.setdefault("PYKEOPS_VERBOSE", "0")
+    os.environ.setdefault("KEOPS_VERBOSE", "0")
+    stderr_fd = 2
+    saved_stderr_fd = os.dup(stderr_fd)
+    try:
+        with open(os.devnull, "w") as devnull, redirect_stderr(io.StringIO()):
+            os.dup2(devnull.fileno(), stderr_fd)
+            yield
+    finally:
+        os.dup2(saved_stderr_fd, stderr_fd)
+        os.close(saved_stderr_fd)
+
+def _synthcity_data_loaders():
+    with quiet_synthcity_imports():
+        from synthcity.plugins.core.dataloader import GenericDataLoader, TimeSeriesDataLoader
+    return GenericDataLoader, TimeSeriesDataLoader
+
+def _format_name(data_format: Any) -> Any:
+    if isinstance(data_format, str):
+        return data_format
+    if getattr(data_format, "__module__", None) == "synthcity.plugins.core.dataloader":
+        if getattr(data_format, "__name__", None) == "GenericDataLoader":
+            return GenericDataLoaderFormat
+        if getattr(data_format, "__name__", None) == "TimeSeriesDataLoader":
+            return TimeSeriesDataLoaderFormat
+    return data_format
+
+def _data_format(data: Any) -> Any:
+    return _format_name(type(data))
+
 def ensure_format(
     data: Any,
     target_formats: List[Any],
     **kwargs,
 ) -> Any:
+    target_formats = [_format_name(target_format) for target_format in target_formats]
     assert all(target_format in SUPPORTED_FORMATS for target_format in target_formats)
-    source_format = type(data)
+    source_format = _data_format(data)
     if source_format == str:
         data = loader(data)
-        source_format = type(data)
+        source_format = _data_format(data)
     if source_format not in SUPPORTED_FORMATS:
         raise ValueError(f"unknown source format {source_format}")
     for target_format in target_formats:
@@ -51,7 +96,7 @@ def ensure_format(
         if target_format == Dataset:
             if source_format in (list, ndarray):
                 data, source_format = DataFrame(data), DataFrame
-            if source_format == GenericDataLoader:
+            if source_format == GenericDataLoaderFormat:
                 data, source_format = data.dataframe(), DataFrame
             if source_format == DataFrame:
                 ds = Dataset.from_pandas(data)
@@ -63,21 +108,22 @@ def ensure_format(
                 return DataFrame(data)
             if source_format == Dataset:
                 return data.to_pandas()
-            if source_format == GenericDataLoader:
+            if source_format == GenericDataLoaderFormat:
                 return data.dataframe()
             raise ValueError(f"cannot convert {source_format} to {target_format}")
-        if target_format == GenericDataLoader:
+        if target_format == GenericDataLoaderFormat:
             if source_format == Dataset:
                 data, source_format = data.to_pandas(), DataFrame
             if source_format in (list, ndarray, DataFrame):
+                GenericDataLoader, _ = _synthcity_data_loaders()
                 return GenericDataLoader(data, **kwargs)
             raise ValueError(f"cannot convert {source_format} to {target_format}")
-        if target_format == TimeSeriesDataLoader:
+        if target_format == TimeSeriesDataLoaderFormat:
             raise ValueError(f"cannot convert {source_format} to {target_format}")
         if target_format == list:
             if source_format == Dataset:
                 data, source_format = data.to_pandas(), DataFrame
-            if source_format == GenericDataLoader:
+            if source_format == GenericDataLoaderFormat:
                 data, source_format = data.dataframe(), DataFrame
             if source_format == DataFrame:
                 data, source_format = data.to_numpy(), ndarray
@@ -87,7 +133,7 @@ def ensure_format(
         if target_format == ndarray:
             if source_format == Dataset:
                 data, source_format = data.to_pandas(), DataFrame
-            if source_format == GenericDataLoader:
+            if source_format == GenericDataLoaderFormat:
                 data, source_format = data.dataframe(), DataFrame
             if source_format == DataFrame:
                 return data.to_numpy()
@@ -105,14 +151,16 @@ class StateDict():
         model=None,
         eval=None,
     ) -> None:
-        assert model is None or isinstance(model, Model)
+        if model is not None:
+            from ..models import Model
+            assert isinstance(model, Model)
         self.train = train
         self.test = test
         self.synth = synth
         self.model = model
         self.eval = eval
     def wrap(data: Any):
-        data_format = type(data)
+        data_format = _data_format(data)
         if data_format == StateDict:
             return data.clone()
         if data_format in SUPPORTED_FORMATS:
@@ -141,6 +189,7 @@ class StateDict():
         key: str = None,
         part_size: int = 2**30,
     ) -> None:
+        output_format = _format_name(output_format)
         assert isinstance(name, str) or isinstance(name, PathLike)
         assert output_format is None or output_format in SUPPORTED_FORMATS
         assert key is None or key in STATE_DICT_FIELDS
@@ -166,6 +215,7 @@ class StateDict():
             if (path / f"{key}.pickle").is_file():
                 kwargs[key] = loader(path / f"{key}.pickle").train
         try:
+            from ..models import AutoModel
             kwargs["model"] = AutoModel.from_pretrained(name)
         except:
             pass
@@ -214,6 +264,7 @@ class State():
         index: int = None,
         part_size: int = 2**30,
     ) -> None:
+        output_format = _format_name(output_format)
         assert isinstance(name, str) or isinstance(name, PathLike)
         assert output_format is None or output_format in SUPPORTED_FORMATS
         assert key is None or key in STATE_DICT_FIELDS
@@ -253,6 +304,7 @@ def saver(
     output_format = None,
     key: str = None,
 ) -> None:
+    output_format = _format_name(output_format)
     assert isinstance(name, str) or isinstance(name, PathLike)
     assert output_format is None or output_format in SUPPORTED_FORMATS
     assert key is None or key in STATE_DICT_FIELDS
